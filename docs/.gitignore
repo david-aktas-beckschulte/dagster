@@ -1,6 +1,0 @@
-sphinx/_build/
-.env
-next/.env
-docs-beta/.docusaurus
-*.duckdb
-*.sqlite
