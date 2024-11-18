@@ -78,6 +78,3 @@ Reload the code location and look at the `trip_update_job` once more to verify t
 
 ![trip_update_job with the airport_trips asset](/images/dagster-dbt/lesson-5/job-without-dbt-models.png)
 
-{% callout %}
-> 💡 **Want an even more convenient utility to do this work for you?** Consider using the similar [`build_schedule_from_dbt_selection`](https://docs.dagster.io/_apidocs/libraries/dagster-dbt#dagster_dbt.build_schedule_from_dbt_selection) function to quickly create a job and schedule for a given dbt selection.
-{% /callout %}

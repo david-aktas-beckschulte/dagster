@@ -42,9 +42,6 @@ setup(
 )
 ```
 
-{% callout %}
-💡 **Heads up!** We strongly recommend installing the project dependencies inside a Python virtual environment. If you need a primer on virtual environments, including creating and activating one, check out this [blog post](https://dagster.io/blog/python-packages-primer-2).
-{% /callout %}
 
 Then, run the following in the command line to rename the `.env.example`  file and install the dependencies:
 

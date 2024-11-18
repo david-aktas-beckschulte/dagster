@@ -36,10 +36,7 @@ To answer this question, let’s go back to our cookie example and take a look a
 
 {% /table %}
 
-{% callout %}
-**Conclusion**: With an asset-centric approach, it’s easy for everyone to understand the workflow and what’s produced, even if they didn’t build the workflow themselves.
-With a task-centric approach, it may not be immediately obvious how and when assets are produced in the process.
-{% /callout %}
+
 
 ---
 
@@ -67,10 +64,6 @@ With a task-centric approach, it may not be immediately obvious how and when ass
 
 {% /table %}
 
-{% callout %}
-**Conclusion**: With an asset-centric approach, you can easily reuse assets by defining dependencies between them and other assets.
-With a task-centric approach, more changes may be required to create additional assets, as assets are closely coupled with the tasks that create them.
-{% /callout %}
 
 ---
 
@@ -98,10 +91,7 @@ With a task-centric approach, more changes may be required to create additional 
 
 {% /table %}
 
-{% callout %}
-**Conclusion**: With an asset-centric approach, you can easily determine if an upstream asset is out-of-date and refresh it before downstream assets are executed.
-With a task-centric approach, you may not know data is outdated until the process fails.
-{% /callout %}
+
 
 ---
 
@@ -127,10 +117,7 @@ With a task-centric approach, you may not know data is outdated until the proces
 
 {% /table %}
 
-{% callout %}
-**Conclusion**: With an asset-centric approach, you can easily identify the problematic asset, address it, and only need to re-execute that asset again.
-With a task-centric approach, it may take more effort to identify which assets require troubleshooting and then the steps that produce them. Additionally, you may need to re-execute the entire pipeline once a fix is implemented, as it may not be possible to re-execute single steps.
-{% /callout %}
+
 
 ---
 

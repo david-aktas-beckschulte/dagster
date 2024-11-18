@@ -60,10 +60,6 @@ Scrolling through the logs, you’ll see the dbt commands Dagster executes, alon
 
 The log statement that indicates what dbt command is being run. Note that this executed the dbt run specified in the `dbt_analytics` asset.
 
-{% callout %}
-
-> 💡 **What’s `--select fqn:*`?** As mentioned earlier, Dagster tries to run dbt in as few executions as possible. `fqn` is a [dbt selection method](https://docs.getdbt.com/reference/node-selection/methods#the-fqn-method) that is as explicit as it gets and matches the node names in a `manifest.json`. The `*` means it will run all dbt models.
-> {% /callout %}
 
 ### Materialization events
 

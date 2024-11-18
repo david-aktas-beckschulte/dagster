@@ -14,6 +14,3 @@ In this lesson, you:
 
 The patterns you used are general enough that they can also be applied to any type of partition, allowing you to partition your incremental models by location, customer, or other dimensions. Tinker around with the `context.partition_key` property if you’re interested!
 
-{% callout %}
-> 💡 **Tip:** Did you know dbt models can resolve schema changes on their own? Using `on_schema_change: "sync_all_columns"`, you can avoid needing to fully refresh your dbt models and instead only orchestrate with Dagster backfills.
-{% /callout %}

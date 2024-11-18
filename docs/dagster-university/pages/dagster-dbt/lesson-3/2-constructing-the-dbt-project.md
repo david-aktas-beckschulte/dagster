@@ -22,10 +22,6 @@ To confirm that a manifest file was generated, you should see two changes in you
 1. A new directory at `analytics/target`, and
 2. In the `target` directory, the `manifest.json` file
 
-{% callout %}
-> 💡 We recommend `dbt parse` since it doesn’t require a connection to your data warehouse to generate a manifest file, as opposed to commands like `dbt compile`. This means that `dbt parse` is fast and consistent across any environments you run it in, such as locally or during deployment.
-> 
-> If your dbt models use any [introspective queries](https://docs.getdbt.com/reference/commands/compile#interactive-compile), you may need to run `dbt compile` instead.
-{% /callout %}
+
 
 In Lesson 4, we’ll explore some options for deploying the manifest file more programmatically, along with some tips and tricks on having it regularly build your dbt manifest file during development.

@@ -14,9 +14,7 @@ Now that the project is set up and ready in GitHub, it’s time to move to Dagst
 4. The next step is to add our project to Dagster+! Click the **Import a Dagster project** option and do the following:
     1. In the **Git scope** field, select the GitHub account or organization that contains your project repository.
        
-       {% callout %}
-       > 💡 **Don’t see the right account/organization?** You may need to install the Dagster+ GitHub app first. To do this, click **+ Add account or organization.** You’ll be redirected to GitHub to complete the setup, and then automatically sent back to Dagster+ when finished. If you’re installing within your company’s GitHub organization, you may need your company’s GitHub admin to approve the app.
-       {% /callout %}
+
         
     2. In the **Repository** field, select the repository containing your Dagster project.
     3. Click **Deploy. Note that the deployment can take a few minutes.** Feel free to go grab a snack while you’re waiting!
