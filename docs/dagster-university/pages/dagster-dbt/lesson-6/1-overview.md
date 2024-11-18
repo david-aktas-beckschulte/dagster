@@ -19,10 +19,6 @@ All this said, incremental models aren’t *bad*. They could just be better. Inc
 
 ## Dagster partitions can help
 
-{% callout %}
-> 💡 **Need a primer on partitions?** Check this [Dagster Short](https://www.youtube.com/watch?v=zfLBHFCbocE) on YouTube!
-{% /callout %}
-
 Dagster partitions are predictable, repeatable, and don’t require a massive rebuild when one chunk of data is incorrect. A partition has discrete bounds, such as partitioning an asset by month or location, making it easy to understand what data will be created each time a partition is materialized. 
 
 Partitions can also be run independently from each other. If only one partition went awry, then you can re-materialize just that single erroneous partition without remaking your entire asset.
