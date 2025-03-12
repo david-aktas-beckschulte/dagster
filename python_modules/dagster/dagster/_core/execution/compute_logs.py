@@ -19,13 +19,17 @@ WIN_PY36_COMPUTE_LOG_DISABLED_MSG = """\u001b[33mWARNING: Compute log capture is
 
 
 def create_compute_log_file_key():
-    return "".join(random.choice(string.ascii_lowercase) for x in range(8))
+    # Ensure that if user code has seeded the random module that it
+    # doesn't cause the same file key for each step (but the random
+    # seed is still restored afterwards)
+    rng = random.Random(int.from_bytes(os.urandom(16), "big"))
+    return "".join(rng.choice(string.ascii_lowercase) for x in range(8))
 
 
 @contextmanager
 def redirect_to_file(stream, filepath):
     with open(filepath, "a+", buffering=1, encoding="utf8") as file_stream:
-        with redirect_stream(file_stream, stream):
+        with redirect_stream(file_stream, stream):  # pyright: ignore[reportArgumentType]
             yield
 
 
@@ -62,7 +66,7 @@ def redirect_stream(to_stream=os.devnull, from_stream=sys.stdout):
     with os.fdopen(os.dup(from_fd), "wb") as copied:
         from_stream.flush()
         try:
-            os.dup2(_fileno(to_stream), from_fd)
+            os.dup2(_fileno(to_stream), from_fd)  # pyright: ignore[reportArgumentType]
         except ValueError:
             with open(to_stream, "wb") as to_file:
                 os.dup2(to_file.fileno(), from_fd)
@@ -70,7 +74,7 @@ def redirect_stream(to_stream=os.devnull, from_stream=sys.stdout):
             yield from_stream
         finally:
             from_stream.flush()
-            to_stream.flush()
+            to_stream.flush()  # pyright: ignore[reportAttributeAccessIssue]
             os.dup2(copied.fileno(), from_fd)
 
 

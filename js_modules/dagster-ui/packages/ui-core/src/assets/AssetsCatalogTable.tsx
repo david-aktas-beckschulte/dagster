@@ -3,7 +3,10 @@ import * as React from 'react';
 import {useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState} from 'react';
 import {useRouteMatch} from 'react-router-dom';
 import {useSetRecoilState} from 'recoil';
-import {AssetCatalogTableBottomActionBar} from 'shared/assets/AssetCatalogTableBottomActionBar.oss';
+import {FeatureFlag} from 'shared/app/FeatureFlags.oss';
+import {AssetGraphFilterBar} from 'shared/asset-graph/AssetGraphFilterBar.oss';
+import {CatalogViewSelector} from 'shared/assets/CatalogViewSelector.oss';
+import {CreateCatalogViewButton} from 'shared/assets/CreateCatalogViewButton.oss';
 import {useAssetCatalogFiltering} from 'shared/assets/useAssetCatalogFiltering.oss';
 
 import {AssetTable} from './AssetTable';
@@ -19,19 +22,21 @@ import {
   AssetCatalogTableQueryVersion,
 } from './types/AssetsCatalogTable.types';
 import {AssetViewType, useAssetView} from './useAssetView';
-import {useBasicAssetSearchInput} from './useBasicAssetSearchInput';
 import {gql, useApolloClient} from '../apollo-client';
 import {AppContext} from '../app/AppContext';
+import {featureEnabled} from '../app/Flags';
 import {PYTHON_ERROR_FRAGMENT} from '../app/PythonErrorFragment';
 import {PythonErrorInfo} from '../app/PythonErrorInfo';
 import {FIFTEEN_SECONDS, useRefreshAtInterval} from '../app/QueryRefresh';
 import {currentPageAtom} from '../app/analytics';
 import {PythonErrorFragment} from '../app/types/PythonErrorFragment.types';
+import {useAssetSelectionInput} from '../asset-selection/input/useAssetSelectionInput';
 import {AssetGroupSelector} from '../graphql/types';
 import {useUpdatingRef} from '../hooks/useUpdatingRef';
 import {useBlockTraceUntilTrue} from '../performance/TraceContext';
 import {fetchPaginatedData} from '../runs/fetchPaginatedBucketData';
 import {CacheManager} from '../search/useIndexedDBCachedQuery';
+import {SyntaxError} from '../selection/CustomErrorListener';
 import {LoadingSpinner} from '../ui/Loading';
 
 type Asset = AssetTableFragment;
@@ -200,7 +205,7 @@ export const AssetsCatalogTable = ({
 
   const [view, setView] = useAssetView();
 
-  const {assets, query, error} = useAllAssets({groupSelector});
+  const {assets, loading: assetsLoading, query, error} = useAllAssets({groupSelector});
 
   const {
     filteredAssets: partiallyFiltered,
@@ -209,14 +214,25 @@ export const AssetsCatalogTable = ({
     filterButton,
     activeFiltersJsx,
     kindFilter,
-  } = useAssetCatalogFiltering({assets});
+  } = useAssetCatalogFiltering({
+    assets,
+    loading: assetsLoading,
+    enabled: !featureEnabled(FeatureFlag.flagSelectionSyntax),
+  });
 
-  const {searchPath, filterInput, filtered} = useBasicAssetSearchInput(
-    partiallyFiltered,
-    prefixPath,
-  );
+  const [errorState, setErrorState] = useState<SyntaxError[]>([]);
+  const {filterInput, filtered, loading, assetSelection, setAssetSelection} =
+    useAssetSelectionInput({
+      assets: partiallyFiltered,
+      assetsLoading: !assets || filteredAssetsLoading,
+      onErrorStateChange: (errors) => {
+        if (errors !== errorState) {
+          setErrorState(errors);
+        }
+      },
+    });
 
-  useBlockTraceUntilTrue('useAllAssets', !!assets?.length);
+  useBlockTraceUntilTrue('useAllAssets', !!assets?.length && !loading);
 
   const {displayPathForAsset, displayed} = useMemo(
     () =>
@@ -228,7 +244,7 @@ export const AssetsCatalogTable = ({
 
   const refreshState = useRefreshAtInterval({
     refresh: query,
-    intervalMs: FIFTEEN_SECONDS,
+    intervalMs: 4 * FIFTEEN_SECONDS,
     leading: true,
   });
 
@@ -258,10 +274,11 @@ export const AssetsCatalogTable = ({
     <AssetTable
       view={view}
       assets={displayed}
-      isLoading={filteredAssetsLoading}
+      isLoading={filteredAssetsLoading || loading}
       isFiltered={isFiltered}
+      errorState={errorState}
       actionBarComponents={
-        <>
+        <Box flex={{gap: 12, alignItems: 'flex-start'}}>
           <ButtonGroup<AssetViewType>
             activeItems={new Set([view])}
             buttons={[
@@ -275,18 +292,26 @@ export const AssetsCatalogTable = ({
               }
             }}
           />
-          {filterButton}
+          {featureEnabled(FeatureFlag.flagSelectionSyntax) ? <CatalogViewSelector /> : filterButton}
           {filterInput}
-        </>
+          {featureEnabled(FeatureFlag.flagSelectionSyntax) ? <CreateCatalogViewButton /> : null}
+        </Box>
       }
       belowActionBarComponents={
-        <AssetCatalogTableBottomActionBar activeFiltersJsx={activeFiltersJsx} />
+        featureEnabled(FeatureFlag.flagSelectionSyntax) ? null : (
+          <AssetGraphFilterBar
+            activeFiltersJsx={activeFiltersJsx}
+            assetSelection={assetSelection}
+            setAssetSelection={setAssetSelection}
+          />
+        )
       }
       refreshState={refreshState}
       prefixPath={prefixPath || emptyArray}
-      searchPath={searchPath}
+      assetSelection={assetSelection}
       displayPathForAsset={displayPathForAsset}
       kindFilter={kindFilter}
+      onChangeAssetSelection={setAssetSelection}
     />
   );
 };

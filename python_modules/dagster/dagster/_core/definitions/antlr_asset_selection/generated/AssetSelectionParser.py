@@ -12,8 +12,8 @@ def serializedATN():
     return [
         4,
         1,
-        22,
-        91,
+        27,
+        117,
         2,
         0,
         7,
@@ -38,24 +38,24 @@ def serializedATN():
         5,
         7,
         5,
+        2,
+        6,
+        7,
+        6,
+        2,
+        7,
+        7,
+        7,
+        2,
+        8,
+        7,
+        8,
         1,
         0,
         1,
         0,
         1,
         0,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
         1,
         1,
         1,
@@ -103,99 +103,61 @@ def serializedATN():
         1,
         1,
         1,
-        1,
-        1,
-        1,
-        1,
         5,
         1,
-        47,
+        45,
         8,
         1,
         10,
         1,
         12,
         1,
-        50,
+        48,
         9,
         1,
         1,
         2,
         1,
         2,
-        4,
+        1,
         2,
-        54,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        3,
+        2,
+        60,
         8,
         2,
-        11,
-        2,
-        12,
-        2,
-        55,
+        1,
         3,
-        2,
-        58,
+        3,
+        3,
+        63,
         8,
-        2,
-        1,
         3,
         1,
         3,
         1,
-        4,
-        1,
-        4,
-        1,
-        4,
-        1,
-        4,
-        1,
-        4,
-        1,
-        4,
-        1,
-        4,
-        1,
-        4,
-        1,
-        4,
+        3,
         1,
         4,
         1,
         4,
         3,
         4,
-        73,
-        8,
-        4,
-        1,
-        4,
-        1,
-        4,
-        1,
-        4,
-        1,
-        4,
-        1,
-        4,
-        1,
-        4,
-        1,
-        4,
-        1,
-        4,
-        1,
-        4,
-        1,
-        4,
-        1,
-        4,
-        1,
-        4,
-        3,
-        4,
-        87,
+        69,
         8,
         4,
         1,
@@ -203,30 +165,128 @@ def serializedATN():
         1,
         5,
         1,
-        5,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        3,
+        6,
+        81,
+        8,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        3,
+        6,
+        103,
+        8,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        1,
+        6,
+        3,
+        6,
+        111,
+        8,
+        6,
+        1,
+        7,
+        1,
+        7,
+        1,
+        8,
+        1,
+        8,
+        1,
+        8,
         0,
         1,
         2,
-        6,
+        9,
         0,
         2,
         4,
         6,
         8,
         10,
+        12,
+        14,
+        16,
         0,
-        2,
+        3,
         1,
+        0,
+        22,
+        23,
+        1,
+        0,
+        24,
+        25,
+        1,
+        0,
+        24,
+        26,
+        129,
         0,
         18,
-        19,
-        1,
-        0,
-        20,
-        21,
-        102,
-        0,
-        12,
         1,
         0,
         0,
@@ -238,167 +298,149 @@ def serializedATN():
         0,
         0,
         4,
-        57,
-        1,
-        0,
-        0,
-        0,
-        6,
         59,
         1,
         0,
         0,
         0,
+        6,
+        62,
+        1,
+        0,
+        0,
+        0,
         8,
-        86,
+        66,
         1,
         0,
         0,
         0,
         10,
-        88,
+        70,
         1,
         0,
         0,
         0,
         12,
-        13,
+        110,
+        1,
+        0,
+        0,
+        0,
+        14,
+        112,
+        1,
+        0,
+        0,
+        0,
+        16,
+        114,
+        1,
+        0,
+        0,
+        0,
+        18,
+        19,
         3,
         2,
         1,
         0,
-        13,
-        14,
+        19,
+        20,
         5,
         0,
         0,
         1,
-        14,
+        20,
         1,
         1,
         0,
         0,
         0,
-        15,
-        16,
+        21,
+        22,
         6,
         1,
         -1,
         0,
-        16,
-        37,
-        3,
-        8,
-        4,
-        0,
-        17,
-        18,
-        3,
-        4,
-        2,
-        0,
-        18,
-        19,
-        3,
-        2,
-        1,
-        9,
-        19,
-        37,
-        1,
-        0,
-        0,
-        0,
-        20,
-        21,
-        3,
-        4,
-        2,
-        0,
-        21,
         22,
-        3,
-        2,
-        1,
-        0,
-        22,
-        23,
+        37,
         3,
         4,
         2,
         0,
         23,
-        37,
-        1,
-        0,
-        0,
+        24,
+        3,
+        6,
+        3,
         0,
         24,
         25,
+        3,
+        4,
+        2,
+        0,
+        25,
+        26,
+        3,
+        8,
+        4,
+        0,
+        26,
+        37,
+        1,
+        0,
+        0,
+        0,
+        27,
+        28,
+        3,
+        6,
+        3,
+        0,
+        28,
+        29,
+        3,
+        4,
+        2,
+        0,
+        29,
+        37,
+        1,
+        0,
+        0,
+        0,
+        30,
+        31,
+        3,
+        4,
+        2,
+        0,
+        31,
+        32,
+        3,
+        8,
+        4,
+        0,
+        32,
+        37,
+        1,
+        0,
+        0,
+        0,
+        33,
+        34,
         5,
         4,
         0,
         0,
-        25,
-        37,
-        3,
-        2,
-        1,
-        6,
-        26,
-        27,
-        3,
-        6,
-        3,
-        0,
-        27,
-        28,
-        5,
-        8,
-        0,
-        0,
-        28,
-        29,
-        3,
-        2,
-        1,
-        0,
-        29,
-        30,
-        5,
-        9,
-        0,
-        0,
-        30,
-        37,
-        1,
-        0,
-        0,
-        0,
-        31,
-        32,
-        5,
-        8,
-        0,
-        0,
-        32,
-        33,
-        3,
-        2,
-        1,
-        0,
-        33,
-        34,
-        5,
-        9,
-        0,
-        0,
         34,
         37,
+        3,
+        2,
         1,
-        0,
-        0,
-        0,
+        4,
         35,
         37,
         5,
@@ -406,37 +448,31 @@ def serializedATN():
         0,
         0,
         36,
-        15,
+        21,
         1,
         0,
         0,
         0,
         36,
-        17,
+        23,
         1,
         0,
         0,
         0,
         36,
-        20,
+        27,
         1,
         0,
         0,
         0,
         36,
-        24,
+        30,
         1,
         0,
         0,
         0,
         36,
-        26,
-        1,
-        0,
-        0,
-        0,
-        36,
-        31,
+        33,
         1,
         0,
         0,
@@ -448,7 +484,7 @@ def serializedATN():
         0,
         0,
         37,
-        48,
+        46,
         1,
         0,
         0,
@@ -456,7 +492,7 @@ def serializedATN():
         38,
         39,
         10,
-        5,
+        3,
         0,
         0,
         39,
@@ -466,15 +502,15 @@ def serializedATN():
         0,
         0,
         40,
-        47,
+        45,
         3,
         2,
         1,
-        6,
+        4,
         41,
         42,
         10,
-        4,
+        2,
         0,
         0,
         42,
@@ -484,31 +520,25 @@ def serializedATN():
         0,
         0,
         43,
-        47,
+        45,
         3,
         2,
         1,
-        5,
+        3,
         44,
-        45,
-        10,
-        7,
-        0,
-        0,
-        45,
-        47,
-        3,
-        4,
-        2,
-        0,
-        46,
         38,
         1,
         0,
         0,
         0,
-        46,
+        44,
         41,
+        1,
+        0,
+        0,
+        0,
+        45,
+        48,
         1,
         0,
         0,
@@ -519,8 +549,14 @@ def serializedATN():
         0,
         0,
         0,
+        46,
         47,
-        50,
+        1,
+        0,
+        0,
+        0,
+        47,
+        3,
         1,
         0,
         0,
@@ -531,320 +567,508 @@ def serializedATN():
         0,
         0,
         0,
-        48,
         49,
-        1,
-        0,
-        0,
-        0,
-        49,
+        60,
         3,
-        1,
-        0,
-        0,
-        0,
-        50,
-        48,
-        1,
-        0,
-        0,
-        0,
-        51,
-        58,
-        5,
-        5,
-        0,
-        0,
-        52,
-        54,
-        5,
+        12,
         6,
         0,
+        50,
+        51,
+        3,
+        10,
+        5,
         0,
-        53,
+        51,
         52,
+        5,
+        9,
+        0,
+        0,
+        52,
+        53,
+        3,
+        2,
         1,
         0,
+        53,
+        54,
+        5,
+        10,
         0,
         0,
         54,
-        55,
-        1,
-        0,
-        0,
-        0,
-        55,
-        53,
+        60,
         1,
         0,
         0,
         0,
         55,
         56,
-        1,
-        0,
+        5,
+        9,
         0,
         0,
         56,
-        58,
+        57,
+        3,
+        2,
         1,
-        0,
-        0,
         0,
         57,
-        51,
-        1,
-        0,
-        0,
-        0,
-        57,
-        53,
-        1,
-        0,
-        0,
-        0,
         58,
         5,
+        10,
+        0,
+        0,
+        58,
+        60,
         1,
         0,
         0,
         0,
         59,
-        60,
-        7,
+        49,
+        1,
+        0,
+        0,
+        0,
+        59,
+        50,
+        1,
+        0,
+        0,
+        0,
+        59,
+        55,
+        1,
         0,
         0,
         0,
         60,
-        7,
+        5,
         1,
         0,
         0,
         0,
         61,
-        62,
-        5,
-        11,
-        0,
-        0,
-        62,
         63,
         5,
         7,
         0,
         0,
-        63,
-        87,
-        3,
-        10,
-        5,
-        0,
-        64,
-        65,
-        5,
-        12,
-        0,
-        0,
-        65,
-        66,
-        5,
-        7,
-        0,
-        0,
-        66,
-        87,
-        3,
-        10,
-        5,
-        0,
-        67,
-        68,
-        5,
-        15,
-        0,
-        0,
-        68,
-        69,
-        5,
-        7,
-        0,
-        0,
-        69,
-        72,
-        3,
-        10,
-        5,
-        0,
-        70,
-        71,
-        5,
-        1,
-        0,
-        0,
-        71,
-        73,
-        3,
-        10,
-        5,
-        0,
-        72,
-        70,
-        1,
-        0,
-        0,
-        0,
-        72,
-        73,
-        1,
-        0,
-        0,
-        0,
-        73,
-        87,
-        1,
-        0,
-        0,
-        0,
-        74,
-        75,
-        5,
-        13,
-        0,
-        0,
-        75,
-        76,
-        5,
-        7,
-        0,
-        0,
-        76,
-        87,
-        3,
-        10,
-        5,
-        0,
-        77,
-        78,
-        5,
-        14,
-        0,
-        0,
-        78,
-        79,
-        5,
-        7,
-        0,
-        0,
-        79,
-        87,
-        3,
-        10,
-        5,
-        0,
-        80,
-        81,
-        5,
-        16,
-        0,
-        0,
-        81,
-        82,
-        5,
-        7,
-        0,
-        0,
-        82,
-        87,
-        3,
-        10,
-        5,
-        0,
-        83,
-        84,
-        5,
-        17,
-        0,
-        0,
-        84,
-        85,
-        5,
-        7,
-        0,
-        0,
-        85,
-        87,
-        3,
-        10,
-        5,
-        0,
-        86,
+        62,
         61,
         1,
         0,
         0,
         0,
-        86,
+        62,
+        63,
+        1,
+        0,
+        0,
+        0,
+        63,
         64,
         1,
         0,
         0,
         0,
-        86,
+        64,
+        65,
+        5,
+        6,
+        0,
+        0,
+        65,
+        7,
+        1,
+        0,
+        0,
+        0,
+        66,
+        68,
+        5,
+        6,
+        0,
+        0,
+        67,
+        69,
+        5,
+        7,
+        0,
+        0,
+        68,
         67,
         1,
         0,
         0,
         0,
-        86,
-        74,
+        68,
+        69,
         1,
         0,
         0,
         0,
-        86,
-        77,
-        1,
-        0,
-        0,
-        0,
-        86,
-        80,
-        1,
-        0,
-        0,
-        0,
-        86,
-        83,
-        1,
-        0,
-        0,
-        0,
-        87,
+        69,
         9,
         1,
         0,
         0,
         0,
-        88,
-        89,
+        70,
+        71,
         7,
-        1,
         0,
         0,
-        89,
+        0,
+        71,
         11,
         1,
         0,
         0,
         0,
-        7,
-        36,
-        46,
-        48,
-        55,
-        57,
         72,
+        73,
+        5,
+        12,
+        0,
+        0,
+        73,
+        74,
+        5,
+        8,
+        0,
+        0,
+        74,
+        111,
+        3,
+        16,
+        8,
+        0,
+        75,
+        76,
+        5,
+        15,
+        0,
+        0,
+        76,
+        77,
+        5,
+        8,
+        0,
+        0,
+        77,
+        80,
+        3,
+        14,
+        7,
+        0,
+        78,
+        79,
+        5,
+        1,
+        0,
+        0,
+        79,
+        81,
+        3,
+        14,
+        7,
+        0,
+        80,
+        78,
+        1,
+        0,
+        0,
+        0,
+        80,
+        81,
+        1,
+        0,
+        0,
+        0,
+        81,
+        111,
+        1,
+        0,
+        0,
+        0,
+        82,
+        83,
+        5,
+        13,
+        0,
+        0,
+        83,
+        84,
+        5,
+        8,
+        0,
+        0,
+        84,
+        111,
+        3,
+        14,
+        7,
+        0,
+        85,
         86,
+        5,
+        14,
+        0,
+        0,
+        86,
+        87,
+        5,
+        8,
+        0,
+        0,
+        87,
+        111,
+        3,
+        14,
+        7,
+        0,
+        88,
+        89,
+        5,
+        16,
+        0,
+        0,
+        89,
+        90,
+        5,
+        8,
+        0,
+        0,
+        90,
+        111,
+        3,
+        14,
+        7,
+        0,
+        91,
+        92,
+        5,
+        18,
+        0,
+        0,
+        92,
+        93,
+        5,
+        8,
+        0,
+        0,
+        93,
+        111,
+        3,
+        14,
+        7,
+        0,
+        94,
+        95,
+        5,
+        19,
+        0,
+        0,
+        95,
+        96,
+        5,
+        8,
+        0,
+        0,
+        96,
+        111,
+        3,
+        14,
+        7,
+        0,
+        97,
+        98,
+        5,
+        20,
+        0,
+        0,
+        98,
+        99,
+        5,
+        8,
+        0,
+        0,
+        99,
+        102,
+        3,
+        14,
+        7,
+        0,
+        100,
+        101,
+        5,
+        1,
+        0,
+        0,
+        101,
+        103,
+        3,
+        14,
+        7,
+        0,
+        102,
+        100,
+        1,
+        0,
+        0,
+        0,
+        102,
+        103,
+        1,
+        0,
+        0,
+        0,
+        103,
+        111,
+        1,
+        0,
+        0,
+        0,
+        104,
+        105,
+        5,
+        17,
+        0,
+        0,
+        105,
+        106,
+        5,
+        8,
+        0,
+        0,
+        106,
+        111,
+        3,
+        14,
+        7,
+        0,
+        107,
+        108,
+        5,
+        21,
+        0,
+        0,
+        108,
+        109,
+        5,
+        8,
+        0,
+        0,
+        109,
+        111,
+        3,
+        14,
+        7,
+        0,
+        110,
+        72,
+        1,
+        0,
+        0,
+        0,
+        110,
+        75,
+        1,
+        0,
+        0,
+        0,
+        110,
+        82,
+        1,
+        0,
+        0,
+        0,
+        110,
+        85,
+        1,
+        0,
+        0,
+        0,
+        110,
+        88,
+        1,
+        0,
+        0,
+        0,
+        110,
+        91,
+        1,
+        0,
+        0,
+        0,
+        110,
+        94,
+        1,
+        0,
+        0,
+        0,
+        110,
+        97,
+        1,
+        0,
+        0,
+        0,
+        110,
+        104,
+        1,
+        0,
+        0,
+        0,
+        110,
+        107,
+        1,
+        0,
+        0,
+        0,
+        111,
+        13,
+        1,
+        0,
+        0,
+        0,
+        112,
+        113,
+        7,
+        1,
+        0,
+        0,
+        113,
+        15,
+        1,
+        0,
+        0,
+        0,
+        114,
+        115,
+        7,
+        2,
+        0,
+        0,
+        115,
+        17,
+        1,
+        0,
+        0,
+        0,
+        9,
+        36,
+        44,
+        46,
+        59,
+        62,
+        68,
+        80,
+        102,
+        110,
     ]
 
 
@@ -860,22 +1084,26 @@ class AssetSelectionParser(Parser):
     literalNames = [
         "<INVALID>",
         "'='",
-        "'and'",
-        "'or'",
-        "'not'",
+        "<INVALID>",
+        "<INVALID>",
+        "<INVALID>",
         "'*'",
         "'+'",
+        "<INVALID>",
         "':'",
         "'('",
         "')'",
         "','",
         "'key'",
-        "'key_substring'",
         "'owner'",
         "'group'",
         "'tag'",
         "'kind'",
         "'code_location'",
+        "'column'",
+        "'table_name'",
+        "'column_tag'",
+        "'changed_in_branch'",
         "'sinks'",
         "'roots'",
     ]
@@ -888,32 +1116,50 @@ class AssetSelectionParser(Parser):
         "NOT",
         "STAR",
         "PLUS",
+        "DIGITS",
         "COLON",
         "LPAREN",
         "RPAREN",
         "COMMA",
         "KEY",
-        "KEY_SUBSTRING",
         "OWNER",
         "GROUP",
         "TAG",
         "KIND",
         "CODE_LOCATION",
+        "COLUMN",
+        "TABLE_NAME",
+        "COLUMN_TAG",
+        "CHANGED_IN_BRANCH",
         "SINKS",
         "ROOTS",
         "QUOTED_STRING",
         "UNQUOTED_STRING",
+        "UNQUOTED_WILDCARD_STRING",
         "WS",
     ]
 
     RULE_start = 0
     RULE_expr = 1
-    RULE_traversal = 2
-    RULE_functionName = 3
-    RULE_attributeExpr = 4
-    RULE_value = 5
+    RULE_traversalAllowedExpr = 2
+    RULE_upTraversal = 3
+    RULE_downTraversal = 4
+    RULE_functionName = 5
+    RULE_attributeExpr = 6
+    RULE_value = 7
+    RULE_keyValue = 8
 
-    ruleNames = ["start", "expr", "traversal", "functionName", "attributeExpr", "value"]
+    ruleNames = [
+        "start",
+        "expr",
+        "traversalAllowedExpr",
+        "upTraversal",
+        "downTraversal",
+        "functionName",
+        "attributeExpr",
+        "value",
+        "keyValue",
+    ]
 
     EOF = Token.EOF
     EQUAL = 1
@@ -922,22 +1168,27 @@ class AssetSelectionParser(Parser):
     NOT = 4
     STAR = 5
     PLUS = 6
-    COLON = 7
-    LPAREN = 8
-    RPAREN = 9
-    COMMA = 10
-    KEY = 11
-    KEY_SUBSTRING = 12
+    DIGITS = 7
+    COLON = 8
+    LPAREN = 9
+    RPAREN = 10
+    COMMA = 11
+    KEY = 12
     OWNER = 13
     GROUP = 14
     TAG = 15
     KIND = 16
     CODE_LOCATION = 17
-    SINKS = 18
-    ROOTS = 19
-    QUOTED_STRING = 20
-    UNQUOTED_STRING = 21
-    WS = 22
+    COLUMN = 18
+    TABLE_NAME = 19
+    COLUMN_TAG = 20
+    CHANGED_IN_BRANCH = 21
+    SINKS = 22
+    ROOTS = 23
+    QUOTED_STRING = 24
+    UNQUOTED_STRING = 25
+    UNQUOTED_WILDCARD_STRING = 26
+    WS = 27
 
     def __init__(self, input: TokenStream, output: TextIO = sys.stdout):
         super().__init__(input, output)
@@ -982,9 +1233,9 @@ class AssetSelectionParser(Parser):
         self.enterRule(localctx, 0, self.RULE_start)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 12
+            self.state = 18
             self.expr(0)
-            self.state = 13
+            self.state = 19
             self.match(AssetSelectionParser.EOF)
         except RecognitionException as re:
             localctx.exception = re
@@ -1007,36 +1258,6 @@ class AssetSelectionParser(Parser):
         def copyFrom(self, ctx: ParserRuleContext):
             super().copyFrom(ctx)
 
-    class ParenthesizedExpressionContext(ExprContext):
-        def __init__(
-            self, parser, ctx: ParserRuleContext
-        ):  # actually a AssetSelectionParser.ExprContext
-            super().__init__(parser)
-            self.copyFrom(ctx)
-
-        def LPAREN(self):
-            return self.getToken(AssetSelectionParser.LPAREN, 0)
-
-        def expr(self):
-            return self.getTypedRuleContext(AssetSelectionParser.ExprContext, 0)
-
-        def RPAREN(self):
-            return self.getToken(AssetSelectionParser.RPAREN, 0)
-
-        def enterRule(self, listener: ParseTreeListener):
-            if hasattr(listener, "enterParenthesizedExpression"):
-                listener.enterParenthesizedExpression(self)
-
-        def exitRule(self, listener: ParseTreeListener):
-            if hasattr(listener, "exitParenthesizedExpression"):
-                listener.exitParenthesizedExpression(self)
-
-        def accept(self, visitor: ParseTreeVisitor):
-            if hasattr(visitor, "visitParenthesizedExpression"):
-                return visitor.visitParenthesizedExpression(self)
-            else:
-                return visitor.visitChildren(self)
-
     class UpTraversalExpressionContext(ExprContext):
         def __init__(
             self, parser, ctx: ParserRuleContext
@@ -1044,11 +1265,11 @@ class AssetSelectionParser(Parser):
             super().__init__(parser)
             self.copyFrom(ctx)
 
-        def traversal(self):
-            return self.getTypedRuleContext(AssetSelectionParser.TraversalContext, 0)
+        def upTraversal(self):
+            return self.getTypedRuleContext(AssetSelectionParser.UpTraversalContext, 0)
 
-        def expr(self):
-            return self.getTypedRuleContext(AssetSelectionParser.ExprContext, 0)
+        def traversalAllowedExpr(self):
+            return self.getTypedRuleContext(AssetSelectionParser.TraversalAllowedExprContext, 0)
 
         def enterRule(self, listener: ParseTreeListener):
             if hasattr(listener, "enterUpTraversalExpression"):
@@ -1118,6 +1339,57 @@ class AssetSelectionParser(Parser):
             else:
                 return visitor.visitChildren(self)
 
+    class TraversalAllowedExpressionContext(ExprContext):
+        def __init__(
+            self, parser, ctx: ParserRuleContext
+        ):  # actually a AssetSelectionParser.ExprContext
+            super().__init__(parser)
+            self.copyFrom(ctx)
+
+        def traversalAllowedExpr(self):
+            return self.getTypedRuleContext(AssetSelectionParser.TraversalAllowedExprContext, 0)
+
+        def enterRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "enterTraversalAllowedExpression"):
+                listener.enterTraversalAllowedExpression(self)
+
+        def exitRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "exitTraversalAllowedExpression"):
+                listener.exitTraversalAllowedExpression(self)
+
+        def accept(self, visitor: ParseTreeVisitor):
+            if hasattr(visitor, "visitTraversalAllowedExpression"):
+                return visitor.visitTraversalAllowedExpression(self)
+            else:
+                return visitor.visitChildren(self)
+
+    class DownTraversalExpressionContext(ExprContext):
+        def __init__(
+            self, parser, ctx: ParserRuleContext
+        ):  # actually a AssetSelectionParser.ExprContext
+            super().__init__(parser)
+            self.copyFrom(ctx)
+
+        def traversalAllowedExpr(self):
+            return self.getTypedRuleContext(AssetSelectionParser.TraversalAllowedExprContext, 0)
+
+        def downTraversal(self):
+            return self.getTypedRuleContext(AssetSelectionParser.DownTraversalContext, 0)
+
+        def enterRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "enterDownTraversalExpression"):
+                listener.enterDownTraversalExpression(self)
+
+        def exitRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "exitDownTraversalExpression"):
+                listener.exitDownTraversalExpression(self)
+
+        def accept(self, visitor: ParseTreeVisitor):
+            if hasattr(visitor, "visitDownTraversalExpression"):
+                return visitor.visitDownTraversalExpression(self)
+            else:
+                return visitor.visitChildren(self)
+
     class NotExpressionContext(ExprContext):
         def __init__(
             self, parser, ctx: ParserRuleContext
@@ -1142,33 +1414,6 @@ class AssetSelectionParser(Parser):
         def accept(self, visitor: ParseTreeVisitor):
             if hasattr(visitor, "visitNotExpression"):
                 return visitor.visitNotExpression(self)
-            else:
-                return visitor.visitChildren(self)
-
-    class DownTraversalExpressionContext(ExprContext):
-        def __init__(
-            self, parser, ctx: ParserRuleContext
-        ):  # actually a AssetSelectionParser.ExprContext
-            super().__init__(parser)
-            self.copyFrom(ctx)
-
-        def expr(self):
-            return self.getTypedRuleContext(AssetSelectionParser.ExprContext, 0)
-
-        def traversal(self):
-            return self.getTypedRuleContext(AssetSelectionParser.TraversalContext, 0)
-
-        def enterRule(self, listener: ParseTreeListener):
-            if hasattr(listener, "enterDownTraversalExpression"):
-                listener.enterDownTraversalExpression(self)
-
-        def exitRule(self, listener: ParseTreeListener):
-            if hasattr(listener, "exitDownTraversalExpression"):
-                listener.exitDownTraversalExpression(self)
-
-        def accept(self, visitor: ParseTreeVisitor):
-            if hasattr(visitor, "visitDownTraversalExpression"):
-                return visitor.visitDownTraversalExpression(self)
             else:
                 return visitor.visitChildren(self)
 
@@ -1202,10 +1447,210 @@ class AssetSelectionParser(Parser):
             else:
                 return visitor.visitChildren(self)
 
-    class AttributeExpressionContext(ExprContext):
+    class UpAndDownTraversalExpressionContext(ExprContext):
         def __init__(
             self, parser, ctx: ParserRuleContext
         ):  # actually a AssetSelectionParser.ExprContext
+            super().__init__(parser)
+            self.copyFrom(ctx)
+
+        def upTraversal(self):
+            return self.getTypedRuleContext(AssetSelectionParser.UpTraversalContext, 0)
+
+        def traversalAllowedExpr(self):
+            return self.getTypedRuleContext(AssetSelectionParser.TraversalAllowedExprContext, 0)
+
+        def downTraversal(self):
+            return self.getTypedRuleContext(AssetSelectionParser.DownTraversalContext, 0)
+
+        def enterRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "enterUpAndDownTraversalExpression"):
+                listener.enterUpAndDownTraversalExpression(self)
+
+        def exitRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "exitUpAndDownTraversalExpression"):
+                listener.exitUpAndDownTraversalExpression(self)
+
+        def accept(self, visitor: ParseTreeVisitor):
+            if hasattr(visitor, "visitUpAndDownTraversalExpression"):
+                return visitor.visitUpAndDownTraversalExpression(self)
+            else:
+                return visitor.visitChildren(self)
+
+    def expr(self, _p: int = 0):
+        _parentctx = self._ctx
+        _parentState = self.state
+        localctx = AssetSelectionParser.ExprContext(self, self._ctx, _parentState)
+        _prevctx = localctx
+        _startState = 2
+        self.enterRecursionRule(localctx, 2, self.RULE_expr, _p)
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 36
+            self._errHandler.sync(self)
+            la_ = self._interp.adaptivePredict(self._input, 0, self._ctx)
+            if la_ == 1:
+                localctx = AssetSelectionParser.TraversalAllowedExpressionContext(self, localctx)
+                self._ctx = localctx
+                _prevctx = localctx
+
+                self.state = 22
+                self.traversalAllowedExpr()
+                pass
+
+            elif la_ == 2:
+                localctx = AssetSelectionParser.UpAndDownTraversalExpressionContext(self, localctx)
+                self._ctx = localctx
+                _prevctx = localctx
+                self.state = 23
+                self.upTraversal()
+                self.state = 24
+                self.traversalAllowedExpr()
+                self.state = 25
+                self.downTraversal()
+                pass
+
+            elif la_ == 3:
+                localctx = AssetSelectionParser.UpTraversalExpressionContext(self, localctx)
+                self._ctx = localctx
+                _prevctx = localctx
+                self.state = 27
+                self.upTraversal()
+                self.state = 28
+                self.traversalAllowedExpr()
+                pass
+
+            elif la_ == 4:
+                localctx = AssetSelectionParser.DownTraversalExpressionContext(self, localctx)
+                self._ctx = localctx
+                _prevctx = localctx
+                self.state = 30
+                self.traversalAllowedExpr()
+                self.state = 31
+                self.downTraversal()
+                pass
+
+            elif la_ == 5:
+                localctx = AssetSelectionParser.NotExpressionContext(self, localctx)
+                self._ctx = localctx
+                _prevctx = localctx
+                self.state = 33
+                self.match(AssetSelectionParser.NOT)
+                self.state = 34
+                self.expr(4)
+                pass
+
+            elif la_ == 6:
+                localctx = AssetSelectionParser.AllExpressionContext(self, localctx)
+                self._ctx = localctx
+                _prevctx = localctx
+                self.state = 35
+                self.match(AssetSelectionParser.STAR)
+                pass
+
+            self._ctx.stop = self._input.LT(-1)
+            self.state = 46
+            self._errHandler.sync(self)
+            _alt = self._interp.adaptivePredict(self._input, 2, self._ctx)
+            while _alt != 2 and _alt != ATN.INVALID_ALT_NUMBER:
+                if _alt == 1:
+                    if self._parseListeners is not None:
+                        self.triggerExitRuleEvent()
+                    _prevctx = localctx
+                    self.state = 44
+                    self._errHandler.sync(self)
+                    la_ = self._interp.adaptivePredict(self._input, 1, self._ctx)
+                    if la_ == 1:
+                        localctx = AssetSelectionParser.AndExpressionContext(
+                            self, AssetSelectionParser.ExprContext(self, _parentctx, _parentState)
+                        )
+                        self.pushNewRecursionContext(localctx, _startState, self.RULE_expr)
+                        self.state = 38
+                        if not self.precpred(self._ctx, 3):
+                            from antlr4.error.Errors import FailedPredicateException
+
+                            raise FailedPredicateException(self, "self.precpred(self._ctx, 3)")
+                        self.state = 39
+                        self.match(AssetSelectionParser.AND)
+                        self.state = 40
+                        self.expr(4)
+                        pass
+
+                    elif la_ == 2:
+                        localctx = AssetSelectionParser.OrExpressionContext(
+                            self, AssetSelectionParser.ExprContext(self, _parentctx, _parentState)
+                        )
+                        self.pushNewRecursionContext(localctx, _startState, self.RULE_expr)
+                        self.state = 41
+                        if not self.precpred(self._ctx, 2):
+                            from antlr4.error.Errors import FailedPredicateException
+
+                            raise FailedPredicateException(self, "self.precpred(self._ctx, 2)")
+                        self.state = 42
+                        self.match(AssetSelectionParser.OR)
+                        self.state = 43
+                        self.expr(3)
+                        pass
+
+                self.state = 48
+                self._errHandler.sync(self)
+                _alt = self._interp.adaptivePredict(self._input, 2, self._ctx)
+
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.unrollRecursionContexts(_parentctx)
+        return localctx
+
+    class TraversalAllowedExprContext(ParserRuleContext):
+        __slots__ = "parser"
+
+        def __init__(self, parser, parent: ParserRuleContext = None, invokingState: int = -1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def getRuleIndex(self):
+            return AssetSelectionParser.RULE_traversalAllowedExpr
+
+        def copyFrom(self, ctx: ParserRuleContext):
+            super().copyFrom(ctx)
+
+    class ParenthesizedExpressionContext(TraversalAllowedExprContext):
+        def __init__(
+            self, parser, ctx: ParserRuleContext
+        ):  # actually a AssetSelectionParser.TraversalAllowedExprContext
+            super().__init__(parser)
+            self.copyFrom(ctx)
+
+        def LPAREN(self):
+            return self.getToken(AssetSelectionParser.LPAREN, 0)
+
+        def expr(self):
+            return self.getTypedRuleContext(AssetSelectionParser.ExprContext, 0)
+
+        def RPAREN(self):
+            return self.getToken(AssetSelectionParser.RPAREN, 0)
+
+        def enterRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "enterParenthesizedExpression"):
+                listener.enterParenthesizedExpression(self)
+
+        def exitRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "exitParenthesizedExpression"):
+                listener.exitParenthesizedExpression(self)
+
+        def accept(self, visitor: ParseTreeVisitor):
+            if hasattr(visitor, "visitParenthesizedExpression"):
+                return visitor.visitParenthesizedExpression(self)
+            else:
+                return visitor.visitChildren(self)
+
+    class AttributeExpressionContext(TraversalAllowedExprContext):
+        def __init__(
+            self, parser, ctx: ParserRuleContext
+        ):  # actually a AssetSelectionParser.TraversalAllowedExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
@@ -1226,10 +1671,10 @@ class AssetSelectionParser(Parser):
             else:
                 return visitor.visitChildren(self)
 
-    class FunctionCallExpressionContext(ExprContext):
+    class FunctionCallExpressionContext(TraversalAllowedExprContext):
         def __init__(
             self, parser, ctx: ParserRuleContext
-        ):  # actually a AssetSelectionParser.ExprContext
+        ):  # actually a AssetSelectionParser.TraversalAllowedExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
@@ -1259,257 +1704,148 @@ class AssetSelectionParser(Parser):
             else:
                 return visitor.visitChildren(self)
 
-    class UpAndDownTraversalExpressionContext(ExprContext):
-        def __init__(
-            self, parser, ctx: ParserRuleContext
-        ):  # actually a AssetSelectionParser.ExprContext
-            super().__init__(parser)
-            self.copyFrom(ctx)
-
-        def traversal(self, i: int = None):
-            if i is None:
-                return self.getTypedRuleContexts(AssetSelectionParser.TraversalContext)
-            else:
-                return self.getTypedRuleContext(AssetSelectionParser.TraversalContext, i)
-
-        def expr(self):
-            return self.getTypedRuleContext(AssetSelectionParser.ExprContext, 0)
-
-        def enterRule(self, listener: ParseTreeListener):
-            if hasattr(listener, "enterUpAndDownTraversalExpression"):
-                listener.enterUpAndDownTraversalExpression(self)
-
-        def exitRule(self, listener: ParseTreeListener):
-            if hasattr(listener, "exitUpAndDownTraversalExpression"):
-                listener.exitUpAndDownTraversalExpression(self)
-
-        def accept(self, visitor: ParseTreeVisitor):
-            if hasattr(visitor, "visitUpAndDownTraversalExpression"):
-                return visitor.visitUpAndDownTraversalExpression(self)
-            else:
-                return visitor.visitChildren(self)
-
-    def expr(self, _p: int = 0):
-        _parentctx = self._ctx
-        _parentState = self.state
-        localctx = AssetSelectionParser.ExprContext(self, self._ctx, _parentState)
-        _prevctx = localctx
-        _startState = 2
-        self.enterRecursionRule(localctx, 2, self.RULE_expr, _p)
+    def traversalAllowedExpr(self):
+        localctx = AssetSelectionParser.TraversalAllowedExprContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 4, self.RULE_traversalAllowedExpr)
         try:
-            self.enterOuterAlt(localctx, 1)
-            self.state = 36
+            self.state = 59
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input, 0, self._ctx)
-            if la_ == 1:
+            token = self._input.LA(1)
+            if token in [12, 13, 14, 15, 16, 17, 18, 19, 20, 21]:
                 localctx = AssetSelectionParser.AttributeExpressionContext(self, localctx)
-                self._ctx = localctx
-                _prevctx = localctx
-
-                self.state = 16
+                self.enterOuterAlt(localctx, 1)
+                self.state = 49
                 self.attributeExpr()
                 pass
-
-            elif la_ == 2:
-                localctx = AssetSelectionParser.UpTraversalExpressionContext(self, localctx)
-                self._ctx = localctx
-                _prevctx = localctx
-                self.state = 17
-                self.traversal()
-                self.state = 18
-                self.expr(9)
-                pass
-
-            elif la_ == 3:
-                localctx = AssetSelectionParser.UpAndDownTraversalExpressionContext(self, localctx)
-                self._ctx = localctx
-                _prevctx = localctx
-                self.state = 20
-                self.traversal()
-                self.state = 21
-                self.expr(0)
-                self.state = 22
-                self.traversal()
-                pass
-
-            elif la_ == 4:
-                localctx = AssetSelectionParser.NotExpressionContext(self, localctx)
-                self._ctx = localctx
-                _prevctx = localctx
-                self.state = 24
-                self.match(AssetSelectionParser.NOT)
-                self.state = 25
-                self.expr(6)
-                pass
-
-            elif la_ == 5:
+            elif token in [22, 23]:
                 localctx = AssetSelectionParser.FunctionCallExpressionContext(self, localctx)
-                self._ctx = localctx
-                _prevctx = localctx
-                self.state = 26
-                self.functionName()
-                self.state = 27
-                self.match(AssetSelectionParser.LPAREN)
-                self.state = 28
-                self.expr(0)
-                self.state = 29
-                self.match(AssetSelectionParser.RPAREN)
-                pass
-
-            elif la_ == 6:
-                localctx = AssetSelectionParser.ParenthesizedExpressionContext(self, localctx)
-                self._ctx = localctx
-                _prevctx = localctx
-                self.state = 31
-                self.match(AssetSelectionParser.LPAREN)
-                self.state = 32
-                self.expr(0)
-                self.state = 33
-                self.match(AssetSelectionParser.RPAREN)
-                pass
-
-            elif la_ == 7:
-                localctx = AssetSelectionParser.AllExpressionContext(self, localctx)
-                self._ctx = localctx
-                _prevctx = localctx
-                self.state = 35
-                self.match(AssetSelectionParser.STAR)
-                pass
-
-            self._ctx.stop = self._input.LT(-1)
-            self.state = 48
-            self._errHandler.sync(self)
-            _alt = self._interp.adaptivePredict(self._input, 2, self._ctx)
-            while _alt != 2 and _alt != ATN.INVALID_ALT_NUMBER:
-                if _alt == 1:
-                    if self._parseListeners is not None:
-                        self.triggerExitRuleEvent()
-                    _prevctx = localctx
-                    self.state = 46
-                    self._errHandler.sync(self)
-                    la_ = self._interp.adaptivePredict(self._input, 1, self._ctx)
-                    if la_ == 1:
-                        localctx = AssetSelectionParser.AndExpressionContext(
-                            self, AssetSelectionParser.ExprContext(self, _parentctx, _parentState)
-                        )
-                        self.pushNewRecursionContext(localctx, _startState, self.RULE_expr)
-                        self.state = 38
-                        if not self.precpred(self._ctx, 5):
-                            from antlr4.error.Errors import FailedPredicateException
-
-                            raise FailedPredicateException(self, "self.precpred(self._ctx, 5)")
-                        self.state = 39
-                        self.match(AssetSelectionParser.AND)
-                        self.state = 40
-                        self.expr(6)
-                        pass
-
-                    elif la_ == 2:
-                        localctx = AssetSelectionParser.OrExpressionContext(
-                            self, AssetSelectionParser.ExprContext(self, _parentctx, _parentState)
-                        )
-                        self.pushNewRecursionContext(localctx, _startState, self.RULE_expr)
-                        self.state = 41
-                        if not self.precpred(self._ctx, 4):
-                            from antlr4.error.Errors import FailedPredicateException
-
-                            raise FailedPredicateException(self, "self.precpred(self._ctx, 4)")
-                        self.state = 42
-                        self.match(AssetSelectionParser.OR)
-                        self.state = 43
-                        self.expr(5)
-                        pass
-
-                    elif la_ == 3:
-                        localctx = AssetSelectionParser.DownTraversalExpressionContext(
-                            self, AssetSelectionParser.ExprContext(self, _parentctx, _parentState)
-                        )
-                        self.pushNewRecursionContext(localctx, _startState, self.RULE_expr)
-                        self.state = 44
-                        if not self.precpred(self._ctx, 7):
-                            from antlr4.error.Errors import FailedPredicateException
-
-                            raise FailedPredicateException(self, "self.precpred(self._ctx, 7)")
-                        self.state = 45
-                        self.traversal()
-                        pass
-
+                self.enterOuterAlt(localctx, 2)
                 self.state = 50
-                self._errHandler.sync(self)
-                _alt = self._interp.adaptivePredict(self._input, 2, self._ctx)
+                self.functionName()
+                self.state = 51
+                self.match(AssetSelectionParser.LPAREN)
+                self.state = 52
+                self.expr(0)
+                self.state = 53
+                self.match(AssetSelectionParser.RPAREN)
+                pass
+            elif token in [9]:
+                localctx = AssetSelectionParser.ParenthesizedExpressionContext(self, localctx)
+                self.enterOuterAlt(localctx, 3)
+                self.state = 55
+                self.match(AssetSelectionParser.LPAREN)
+                self.state = 56
+                self.expr(0)
+                self.state = 57
+                self.match(AssetSelectionParser.RPAREN)
+                pass
+            else:
+                raise NoViableAltException(self)
 
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
             self._errHandler.recover(self, re)
         finally:
-            self.unrollRecursionContexts(_parentctx)
+            self.exitRule()
         return localctx
 
-    class TraversalContext(ParserRuleContext):
+    class UpTraversalContext(ParserRuleContext):
         __slots__ = "parser"
 
         def __init__(self, parser, parent: ParserRuleContext = None, invokingState: int = -1):
             super().__init__(parent, invokingState)
             self.parser = parser
 
-        def STAR(self):
-            return self.getToken(AssetSelectionParser.STAR, 0)
+        def PLUS(self):
+            return self.getToken(AssetSelectionParser.PLUS, 0)
 
-        def PLUS(self, i: int = None):
-            if i is None:
-                return self.getTokens(AssetSelectionParser.PLUS)
-            else:
-                return self.getToken(AssetSelectionParser.PLUS, i)
+        def DIGITS(self):
+            return self.getToken(AssetSelectionParser.DIGITS, 0)
 
         def getRuleIndex(self):
-            return AssetSelectionParser.RULE_traversal
+            return AssetSelectionParser.RULE_upTraversal
 
         def enterRule(self, listener: ParseTreeListener):
-            if hasattr(listener, "enterTraversal"):
-                listener.enterTraversal(self)
+            if hasattr(listener, "enterUpTraversal"):
+                listener.enterUpTraversal(self)
 
         def exitRule(self, listener: ParseTreeListener):
-            if hasattr(listener, "exitTraversal"):
-                listener.exitTraversal(self)
+            if hasattr(listener, "exitUpTraversal"):
+                listener.exitUpTraversal(self)
 
         def accept(self, visitor: ParseTreeVisitor):
-            if hasattr(visitor, "visitTraversal"):
-                return visitor.visitTraversal(self)
+            if hasattr(visitor, "visitUpTraversal"):
+                return visitor.visitUpTraversal(self)
             else:
                 return visitor.visitChildren(self)
 
-    def traversal(self):
-        localctx = AssetSelectionParser.TraversalContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 4, self.RULE_traversal)
+    def upTraversal(self):
+        localctx = AssetSelectionParser.UpTraversalContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 6, self.RULE_upTraversal)
+        self._la = 0  # Token type
         try:
-            self.state = 57
+            self.enterOuterAlt(localctx, 1)
+            self.state = 62
             self._errHandler.sync(self)
-            token = self._input.LA(1)
-            if token in [5]:
-                self.enterOuterAlt(localctx, 1)
-                self.state = 51
-                self.match(AssetSelectionParser.STAR)
-                pass
-            elif token in [6]:
-                self.enterOuterAlt(localctx, 2)
-                self.state = 53
-                self._errHandler.sync(self)
-                _alt = 1
-                while _alt != 2 and _alt != ATN.INVALID_ALT_NUMBER:
-                    if _alt == 1:
-                        self.state = 52
-                        self.match(AssetSelectionParser.PLUS)
+            _la = self._input.LA(1)
+            if _la == 7:
+                self.state = 61
+                self.match(AssetSelectionParser.DIGITS)
 
-                    else:
-                        raise NoViableAltException(self)
-                    self.state = 55
-                    self._errHandler.sync(self)
-                    _alt = self._interp.adaptivePredict(self._input, 3, self._ctx)
+            self.state = 64
+            self.match(AssetSelectionParser.PLUS)
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
 
-                pass
+    class DownTraversalContext(ParserRuleContext):
+        __slots__ = "parser"
+
+        def __init__(self, parser, parent: ParserRuleContext = None, invokingState: int = -1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def PLUS(self):
+            return self.getToken(AssetSelectionParser.PLUS, 0)
+
+        def DIGITS(self):
+            return self.getToken(AssetSelectionParser.DIGITS, 0)
+
+        def getRuleIndex(self):
+            return AssetSelectionParser.RULE_downTraversal
+
+        def enterRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "enterDownTraversal"):
+                listener.enterDownTraversal(self)
+
+        def exitRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "exitDownTraversal"):
+                listener.exitDownTraversal(self)
+
+        def accept(self, visitor: ParseTreeVisitor):
+            if hasattr(visitor, "visitDownTraversal"):
+                return visitor.visitDownTraversal(self)
             else:
-                raise NoViableAltException(self)
+                return visitor.visitChildren(self)
+
+    def downTraversal(self):
+        localctx = AssetSelectionParser.DownTraversalContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 8, self.RULE_downTraversal)
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 66
+            self.match(AssetSelectionParser.PLUS)
+            self.state = 68
+            self._errHandler.sync(self)
+            la_ = self._interp.adaptivePredict(self._input, 5, self._ctx)
+            if la_ == 1:
+                self.state = 67
+                self.match(AssetSelectionParser.DIGITS)
 
         except RecognitionException as re:
             localctx.exception = re
@@ -1551,13 +1887,13 @@ class AssetSelectionParser(Parser):
 
     def functionName(self):
         localctx = AssetSelectionParser.FunctionNameContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 6, self.RULE_functionName)
+        self.enterRule(localctx, 10, self.RULE_functionName)
         self._la = 0  # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 59
+            self.state = 70
             _la = self._input.LA(1)
-            if not (_la == 18 or _la == 19):
+            if not (_la == 22 or _la == 23):
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)
@@ -1662,8 +1998,8 @@ class AssetSelectionParser(Parser):
         def COLON(self):
             return self.getToken(AssetSelectionParser.COLON, 0)
 
-        def value(self):
-            return self.getTypedRuleContext(AssetSelectionParser.ValueContext, 0)
+        def keyValue(self):
+            return self.getTypedRuleContext(AssetSelectionParser.KeyValueContext, 0)
 
         def enterRule(self, listener: ParseTreeListener):
             if hasattr(listener, "enterKeyExpr"):
@@ -1676,6 +2012,36 @@ class AssetSelectionParser(Parser):
         def accept(self, visitor: ParseTreeVisitor):
             if hasattr(visitor, "visitKeyExpr"):
                 return visitor.visitKeyExpr(self)
+            else:
+                return visitor.visitChildren(self)
+
+    class ColumnAttributeExprContext(AttributeExprContext):
+        def __init__(
+            self, parser, ctx: ParserRuleContext
+        ):  # actually a AssetSelectionParser.AttributeExprContext
+            super().__init__(parser)
+            self.copyFrom(ctx)
+
+        def COLUMN(self):
+            return self.getToken(AssetSelectionParser.COLUMN, 0)
+
+        def COLON(self):
+            return self.getToken(AssetSelectionParser.COLON, 0)
+
+        def value(self):
+            return self.getTypedRuleContext(AssetSelectionParser.ValueContext, 0)
+
+        def enterRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "enterColumnAttributeExpr"):
+                listener.enterColumnAttributeExpr(self)
+
+        def exitRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "exitColumnAttributeExpr"):
+                listener.exitColumnAttributeExpr(self)
+
+        def accept(self, visitor: ParseTreeVisitor):
+            if hasattr(visitor, "visitColumnAttributeExpr"):
+                return visitor.visitColumnAttributeExpr(self)
             else:
                 return visitor.visitChildren(self)
 
@@ -1739,36 +2105,6 @@ class AssetSelectionParser(Parser):
             else:
                 return visitor.visitChildren(self)
 
-    class KeySubstringExprContext(AttributeExprContext):
-        def __init__(
-            self, parser, ctx: ParserRuleContext
-        ):  # actually a AssetSelectionParser.AttributeExprContext
-            super().__init__(parser)
-            self.copyFrom(ctx)
-
-        def KEY_SUBSTRING(self):
-            return self.getToken(AssetSelectionParser.KEY_SUBSTRING, 0)
-
-        def COLON(self):
-            return self.getToken(AssetSelectionParser.COLON, 0)
-
-        def value(self):
-            return self.getTypedRuleContext(AssetSelectionParser.ValueContext, 0)
-
-        def enterRule(self, listener: ParseTreeListener):
-            if hasattr(listener, "enterKeySubstringExpr"):
-                listener.enterKeySubstringExpr(self)
-
-        def exitRule(self, listener: ParseTreeListener):
-            if hasattr(listener, "exitKeySubstringExpr"):
-                listener.exitKeySubstringExpr(self)
-
-        def accept(self, visitor: ParseTreeVisitor):
-            if hasattr(visitor, "visitKeySubstringExpr"):
-                return visitor.visitKeySubstringExpr(self)
-            else:
-                return visitor.visitChildren(self)
-
     class OwnerAttributeExprContext(AttributeExprContext):
         def __init__(
             self, parser, ctx: ParserRuleContext
@@ -1799,90 +2135,225 @@ class AssetSelectionParser(Parser):
             else:
                 return visitor.visitChildren(self)
 
+    class ChangedInBranchAttributeExprContext(AttributeExprContext):
+        def __init__(
+            self, parser, ctx: ParserRuleContext
+        ):  # actually a AssetSelectionParser.AttributeExprContext
+            super().__init__(parser)
+            self.copyFrom(ctx)
+
+        def CHANGED_IN_BRANCH(self):
+            return self.getToken(AssetSelectionParser.CHANGED_IN_BRANCH, 0)
+
+        def COLON(self):
+            return self.getToken(AssetSelectionParser.COLON, 0)
+
+        def value(self):
+            return self.getTypedRuleContext(AssetSelectionParser.ValueContext, 0)
+
+        def enterRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "enterChangedInBranchAttributeExpr"):
+                listener.enterChangedInBranchAttributeExpr(self)
+
+        def exitRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "exitChangedInBranchAttributeExpr"):
+                listener.exitChangedInBranchAttributeExpr(self)
+
+        def accept(self, visitor: ParseTreeVisitor):
+            if hasattr(visitor, "visitChangedInBranchAttributeExpr"):
+                return visitor.visitChangedInBranchAttributeExpr(self)
+            else:
+                return visitor.visitChildren(self)
+
+    class ColumnTagAttributeExprContext(AttributeExprContext):
+        def __init__(
+            self, parser, ctx: ParserRuleContext
+        ):  # actually a AssetSelectionParser.AttributeExprContext
+            super().__init__(parser)
+            self.copyFrom(ctx)
+
+        def COLUMN_TAG(self):
+            return self.getToken(AssetSelectionParser.COLUMN_TAG, 0)
+
+        def COLON(self):
+            return self.getToken(AssetSelectionParser.COLON, 0)
+
+        def value(self, i: int = None):
+            if i is None:
+                return self.getTypedRuleContexts(AssetSelectionParser.ValueContext)
+            else:
+                return self.getTypedRuleContext(AssetSelectionParser.ValueContext, i)
+
+        def EQUAL(self):
+            return self.getToken(AssetSelectionParser.EQUAL, 0)
+
+        def enterRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "enterColumnTagAttributeExpr"):
+                listener.enterColumnTagAttributeExpr(self)
+
+        def exitRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "exitColumnTagAttributeExpr"):
+                listener.exitColumnTagAttributeExpr(self)
+
+        def accept(self, visitor: ParseTreeVisitor):
+            if hasattr(visitor, "visitColumnTagAttributeExpr"):
+                return visitor.visitColumnTagAttributeExpr(self)
+            else:
+                return visitor.visitChildren(self)
+
+    class TableNameAttributeExprContext(AttributeExprContext):
+        def __init__(
+            self, parser, ctx: ParserRuleContext
+        ):  # actually a AssetSelectionParser.AttributeExprContext
+            super().__init__(parser)
+            self.copyFrom(ctx)
+
+        def TABLE_NAME(self):
+            return self.getToken(AssetSelectionParser.TABLE_NAME, 0)
+
+        def COLON(self):
+            return self.getToken(AssetSelectionParser.COLON, 0)
+
+        def value(self):
+            return self.getTypedRuleContext(AssetSelectionParser.ValueContext, 0)
+
+        def enterRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "enterTableNameAttributeExpr"):
+                listener.enterTableNameAttributeExpr(self)
+
+        def exitRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "exitTableNameAttributeExpr"):
+                listener.exitTableNameAttributeExpr(self)
+
+        def accept(self, visitor: ParseTreeVisitor):
+            if hasattr(visitor, "visitTableNameAttributeExpr"):
+                return visitor.visitTableNameAttributeExpr(self)
+            else:
+                return visitor.visitChildren(self)
+
     def attributeExpr(self):
         localctx = AssetSelectionParser.AttributeExprContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 8, self.RULE_attributeExpr)
+        self.enterRule(localctx, 12, self.RULE_attributeExpr)
         try:
-            self.state = 86
+            self.state = 110
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [11]:
+            if token in [12]:
                 localctx = AssetSelectionParser.KeyExprContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
-                self.state = 61
+                self.state = 72
                 self.match(AssetSelectionParser.KEY)
-                self.state = 62
+                self.state = 73
                 self.match(AssetSelectionParser.COLON)
-                self.state = 63
-                self.value()
-                pass
-            elif token in [12]:
-                localctx = AssetSelectionParser.KeySubstringExprContext(self, localctx)
-                self.enterOuterAlt(localctx, 2)
-                self.state = 64
-                self.match(AssetSelectionParser.KEY_SUBSTRING)
-                self.state = 65
-                self.match(AssetSelectionParser.COLON)
-                self.state = 66
-                self.value()
+                self.state = 74
+                self.keyValue()
                 pass
             elif token in [15]:
                 localctx = AssetSelectionParser.TagAttributeExprContext(self, localctx)
-                self.enterOuterAlt(localctx, 3)
-                self.state = 67
+                self.enterOuterAlt(localctx, 2)
+                self.state = 75
                 self.match(AssetSelectionParser.TAG)
-                self.state = 68
+                self.state = 76
                 self.match(AssetSelectionParser.COLON)
-                self.state = 69
+                self.state = 77
                 self.value()
-                self.state = 72
+                self.state = 80
                 self._errHandler.sync(self)
-                la_ = self._interp.adaptivePredict(self._input, 5, self._ctx)
+                la_ = self._interp.adaptivePredict(self._input, 6, self._ctx)
                 if la_ == 1:
-                    self.state = 70
+                    self.state = 78
                     self.match(AssetSelectionParser.EQUAL)
-                    self.state = 71
+                    self.state = 79
                     self.value()
 
                 pass
             elif token in [13]:
                 localctx = AssetSelectionParser.OwnerAttributeExprContext(self, localctx)
-                self.enterOuterAlt(localctx, 4)
-                self.state = 74
+                self.enterOuterAlt(localctx, 3)
+                self.state = 82
                 self.match(AssetSelectionParser.OWNER)
-                self.state = 75
+                self.state = 83
                 self.match(AssetSelectionParser.COLON)
-                self.state = 76
+                self.state = 84
                 self.value()
                 pass
             elif token in [14]:
                 localctx = AssetSelectionParser.GroupAttributeExprContext(self, localctx)
-                self.enterOuterAlt(localctx, 5)
-                self.state = 77
+                self.enterOuterAlt(localctx, 4)
+                self.state = 85
                 self.match(AssetSelectionParser.GROUP)
-                self.state = 78
+                self.state = 86
                 self.match(AssetSelectionParser.COLON)
-                self.state = 79
+                self.state = 87
                 self.value()
                 pass
             elif token in [16]:
                 localctx = AssetSelectionParser.KindAttributeExprContext(self, localctx)
-                self.enterOuterAlt(localctx, 6)
-                self.state = 80
+                self.enterOuterAlt(localctx, 5)
+                self.state = 88
                 self.match(AssetSelectionParser.KIND)
-                self.state = 81
+                self.state = 89
                 self.match(AssetSelectionParser.COLON)
-                self.state = 82
+                self.state = 90
                 self.value()
+                pass
+            elif token in [18]:
+                localctx = AssetSelectionParser.ColumnAttributeExprContext(self, localctx)
+                self.enterOuterAlt(localctx, 6)
+                self.state = 91
+                self.match(AssetSelectionParser.COLUMN)
+                self.state = 92
+                self.match(AssetSelectionParser.COLON)
+                self.state = 93
+                self.value()
+                pass
+            elif token in [19]:
+                localctx = AssetSelectionParser.TableNameAttributeExprContext(self, localctx)
+                self.enterOuterAlt(localctx, 7)
+                self.state = 94
+                self.match(AssetSelectionParser.TABLE_NAME)
+                self.state = 95
+                self.match(AssetSelectionParser.COLON)
+                self.state = 96
+                self.value()
+                pass
+            elif token in [20]:
+                localctx = AssetSelectionParser.ColumnTagAttributeExprContext(self, localctx)
+                self.enterOuterAlt(localctx, 8)
+                self.state = 97
+                self.match(AssetSelectionParser.COLUMN_TAG)
+                self.state = 98
+                self.match(AssetSelectionParser.COLON)
+                self.state = 99
+                self.value()
+                self.state = 102
+                self._errHandler.sync(self)
+                la_ = self._interp.adaptivePredict(self._input, 7, self._ctx)
+                if la_ == 1:
+                    self.state = 100
+                    self.match(AssetSelectionParser.EQUAL)
+                    self.state = 101
+                    self.value()
+
                 pass
             elif token in [17]:
                 localctx = AssetSelectionParser.CodeLocationAttributeExprContext(self, localctx)
-                self.enterOuterAlt(localctx, 7)
-                self.state = 83
+                self.enterOuterAlt(localctx, 9)
+                self.state = 104
                 self.match(AssetSelectionParser.CODE_LOCATION)
-                self.state = 84
+                self.state = 105
                 self.match(AssetSelectionParser.COLON)
-                self.state = 85
+                self.state = 106
+                self.value()
+                pass
+            elif token in [21]:
+                localctx = AssetSelectionParser.ChangedInBranchAttributeExprContext(self, localctx)
+                self.enterOuterAlt(localctx, 10)
+                self.state = 107
+                self.match(AssetSelectionParser.CHANGED_IN_BRANCH)
+                self.state = 108
+                self.match(AssetSelectionParser.COLON)
+                self.state = 109
                 self.value()
                 pass
             else:
@@ -1928,13 +2399,67 @@ class AssetSelectionParser(Parser):
 
     def value(self):
         localctx = AssetSelectionParser.ValueContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 10, self.RULE_value)
+        self.enterRule(localctx, 14, self.RULE_value)
         self._la = 0  # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 88
+            self.state = 112
             _la = self._input.LA(1)
-            if not (_la == 20 or _la == 21):
+            if not (_la == 24 or _la == 25):
+                self._errHandler.recoverInline(self)
+            else:
+                self._errHandler.reportMatch(self)
+                self.consume()
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+    class KeyValueContext(ParserRuleContext):
+        __slots__ = "parser"
+
+        def __init__(self, parser, parent: ParserRuleContext = None, invokingState: int = -1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def QUOTED_STRING(self):
+            return self.getToken(AssetSelectionParser.QUOTED_STRING, 0)
+
+        def UNQUOTED_STRING(self):
+            return self.getToken(AssetSelectionParser.UNQUOTED_STRING, 0)
+
+        def UNQUOTED_WILDCARD_STRING(self):
+            return self.getToken(AssetSelectionParser.UNQUOTED_WILDCARD_STRING, 0)
+
+        def getRuleIndex(self):
+            return AssetSelectionParser.RULE_keyValue
+
+        def enterRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "enterKeyValue"):
+                listener.enterKeyValue(self)
+
+        def exitRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "exitKeyValue"):
+                listener.exitKeyValue(self)
+
+        def accept(self, visitor: ParseTreeVisitor):
+            if hasattr(visitor, "visitKeyValue"):
+                return visitor.visitKeyValue(self)
+            else:
+                return visitor.visitChildren(self)
+
+    def keyValue(self):
+        localctx = AssetSelectionParser.KeyValueContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 16, self.RULE_keyValue)
+        self._la = 0  # Token type
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 114
+            _la = self._input.LA(1)
+            if not (((_la) & ~0x3F) == 0 and ((1 << _la) & 117440512) != 0):
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)
@@ -1959,10 +2484,7 @@ class AssetSelectionParser(Parser):
 
     def expr_sempred(self, localctx: ExprContext, predIndex: int):
         if predIndex == 0:
-            return self.precpred(self._ctx, 5)
+            return self.precpred(self._ctx, 3)
 
         if predIndex == 1:
-            return self.precpred(self._ctx, 4)
-
-        if predIndex == 2:
-            return self.precpred(self._ctx, 7)
+            return self.precpred(self._ctx, 2)

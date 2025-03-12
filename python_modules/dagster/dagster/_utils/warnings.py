@@ -1,7 +1,8 @@
 import warnings
+from collections.abc import Iterator
 from contextlib import contextmanager
 from contextvars import ContextVar
-from typing import Callable, Iterator, Optional, TypeVar
+from typing import Callable, Optional, TypeVar
 
 import dagster._check as check
 from dagster._core.decorator_utils import Decoratable, apply_context_manager_decorator
@@ -9,6 +10,58 @@ from dagster._core.decorator_utils import Decoratable, apply_context_manager_dec
 T = TypeVar("T")
 
 _warnings_on = ContextVar("_warnings_on", default=True)
+
+# ########################
+# ##### PREVIEW
+# ########################
+
+
+class PreviewWarning(Warning):
+    pass
+
+
+def preview_warning(
+    subject: str,
+    additional_warn_text: Optional[str] = None,
+    stacklevel: int = 3,
+):
+    if not _warnings_on.get():
+        return
+
+    warnings.warn(
+        f"{subject} is currently in preview, and may have breaking changes in patch version releases. "
+        f"This feature is not considered ready for production use."
+        + ((" " + additional_warn_text) if additional_warn_text else ""),
+        category=PreviewWarning,
+        stacklevel=stacklevel,
+    )
+
+
+# ########################
+# ##### BETA
+# ########################
+
+
+class BetaWarning(Warning):
+    pass
+
+
+def beta_warning(
+    subject: str,
+    additional_warn_text: Optional[str] = None,
+    stacklevel: int = 3,
+):
+    if not _warnings_on.get():
+        return
+
+    warnings.warn(
+        f"{subject} is currently in beta, and may have breaking changes in minor version releases, "
+        f"with behavior changes in patch releases."
+        + ((" " + additional_warn_text) if additional_warn_text else ""),
+        category=BetaWarning,
+        stacklevel=stacklevel,
+    )
+
 
 # ########################
 # ##### SUPERSEDED
@@ -96,37 +149,6 @@ def deprecation_warning(
 
 
 # ########################
-# ##### EXPERIMENTAL
-# ########################
-
-EXPERIMENTAL_WARNING_HELP = (
-    "To mute warnings for experimental functionality, invoke"
-    ' warnings.filterwarnings("ignore", category=dagster.ExperimentalWarning) or use'
-    " one of the other methods described at"
-    " https://docs.python.org/3/library/warnings.html#describing-warning-filters."
-)
-
-
-class ExperimentalWarning(Warning):
-    pass
-
-
-def experimental_warning(
-    subject: str, additional_warn_text: Optional[str] = None, stacklevel: int = 3
-) -> None:
-    if not _warnings_on.get():
-        return
-
-    extra_text = f" {additional_warn_text}" if additional_warn_text else ""
-    warnings.warn(
-        f"{subject} is experimental. It may break in future versions, even between dot"
-        f" releases.{extra_text} {EXPERIMENTAL_WARNING_HELP}",
-        ExperimentalWarning,
-        stacklevel=stacklevel,
-    )
-
-
-# ########################
 # ##### Config arg warning
 # ########################
 
@@ -171,7 +193,8 @@ def disable_dagster_warnings() -> Iterator[None]:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", category=DeprecationWarning)
                 warnings.simplefilter("ignore", category=SupersessionWarning)
-                warnings.simplefilter("ignore", category=ExperimentalWarning)
+                warnings.simplefilter("ignore", category=PreviewWarning)
+                warnings.simplefilter("ignore", category=BetaWarning)
                 yield
         finally:
             if token is not None:
@@ -182,15 +205,16 @@ T_Decoratable = TypeVar("T_Decoratable", bound=Decoratable)
 
 
 def suppress_dagster_warnings(__obj: T_Decoratable) -> T_Decoratable:
-    """Mark a method/function as ignoring Dagster-generated warnings. This suppresses any
-    `ExperimentalWarnings` or `DeprecationWarnings` when the function is called.
+    """Mark a method/function as ignoring Dagster-generated warnings.
+    This suppresses any `PreviewWarnings`, `BetaWarnings`, `SupersessionWarnings`
+    or `DeprecationWarnings` when the function is called.
 
     Usage:
 
         .. code-block:: python
 
             @suppress_dagster_warnings
-            def invokes_some_experimental_stuff(my_arg):
-                my_experimental_function(my_arg)
+            def invokes_some_deprecated_stuff(my_arg):
+                my_deprecated_function(my_arg)
     """
     return apply_context_manager_decorator(__obj, disable_dagster_warnings)

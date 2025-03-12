@@ -14,6 +14,8 @@ import {AssetGraphViewType} from '../asset-graph/Utils';
 import {AssetGraphFetchScope} from '../asset-graph/useAssetGraphData';
 import {AssetLocation} from '../asset-graph/useFindAssetLocation';
 import {useDocumentTitle} from '../hooks/useDocumentTitle';
+import {useOpenInNewTab} from '../hooks/useOpenInNewTab';
+import {useStateWithStorage} from '../hooks/useStateWithStorage';
 import {ExplorerPath} from '../pipelines/PipelinePathUtils';
 
 interface AssetGroupRootParams {
@@ -26,6 +28,7 @@ export const AssetsGlobalGraphRoot = () => {
   const history = useHistory();
 
   useDocumentTitle(`Global Asset Lineage`);
+  const openInNewTab = useOpenInNewTab();
 
   const onChangeExplorerPath = useCallback(
     (path: ExplorerPath, mode: 'push' | 'replace') => {
@@ -41,20 +44,30 @@ export const AssetsGlobalGraphRoot = () => {
     (e: Pick<React.MouseEvent<any>, 'metaKey'>, node: AssetLocation) => {
       const path = assetDetailsPathForKey(node.assetKey, {view: 'definition'});
       if (e.metaKey) {
-        window.open(path, '_blank');
+        openInNewTab(path);
       } else {
         history.push(path);
       }
     },
-    [history],
+    [history, openInNewTab],
+  );
+
+  const [hideEdgesToNodesOutsideQuery, setHideEdgesToNodesOutsideQuery] = useStateWithStorage(
+    'hideEdgesToNodesOutsideQuery',
+    (json) => {
+      if (json === 'false' || json === false) {
+        return false;
+      }
+      return true;
+    },
   );
 
   const fetchOptions = useMemo(() => {
     const options: AssetGraphFetchScope = {
-      hideEdgesToNodesOutsideQuery: false,
+      hideEdgesToNodesOutsideQuery,
     };
     return options;
-  }, []);
+  }, [hideEdgesToNodesOutsideQuery]);
 
   return (
     <Page style={{display: 'flex', flexDirection: 'column', paddingBottom: 0}}>
@@ -67,6 +80,7 @@ export const AssetsGlobalGraphRoot = () => {
         onChangeExplorerPath={onChangeExplorerPath}
         onNavigateToSourceAssetNode={onNavigateToSourceAssetNode}
         viewType={AssetGraphViewType.GLOBAL}
+        setHideEdgesToNodesOutsideQuery={setHideEdgesToNodesOutsideQuery}
       />
     </Page>
   );

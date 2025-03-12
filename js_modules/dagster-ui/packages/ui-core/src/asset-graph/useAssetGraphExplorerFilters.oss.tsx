@@ -1,12 +1,14 @@
+import {FeatureFlag} from 'shared/app/FeatureFlags.oss';
 import {AssetGraphFilterBar} from 'shared/asset-graph/AssetGraphFilterBar.oss';
 import {useAssetCatalogFiltering} from 'shared/assets/useAssetCatalogFiltering.oss';
 
 import {AssetGraphViewType, GraphNode} from './Utils';
+import {featureEnabled} from '../app/Flags';
 
-type Props = {
+export type Props = {
   nodes: GraphNode[];
-  clearExplorerPath: () => void;
-  explorerPath: string;
+  setAssetSelection: (selection: string) => void;
+  assetSelection: string;
   viewType: AssetGraphViewType;
   loading: boolean;
 };
@@ -14,14 +16,15 @@ type Props = {
 export function useAssetGraphExplorerFilters({
   nodes,
   viewType,
-  explorerPath,
+  assetSelection,
   loading,
-  clearExplorerPath,
+  setAssetSelection,
 }: Props) {
   const ret = useAssetCatalogFiltering({
     assets: nodes,
     includeRepos: viewType === AssetGraphViewType.GLOBAL,
     loading,
+    enabled: !featureEnabled(FeatureFlag.flagSelectionSyntax),
   });
 
   return {
@@ -30,8 +33,8 @@ export function useAssetGraphExplorerFilters({
     filterBar: (
       <AssetGraphFilterBar
         activeFiltersJsx={ret.activeFiltersJsx}
-        explorerPath={explorerPath}
-        clearExplorerPath={clearExplorerPath}
+        assetSelection={assetSelection}
+        setAssetSelection={setAssetSelection}
       />
     ),
   };

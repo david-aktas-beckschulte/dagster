@@ -1,8 +1,9 @@
 import datetime
 import json
 import os
+from collections.abc import Iterator, Mapping, Sequence
 from contextlib import contextmanager
-from typing import Any, Iterator, Mapping, Optional, Sequence
+from typing import Any, Optional
 
 import dagster._seven as seven
 from dagster import (
@@ -43,7 +44,7 @@ class GCSComputeLogManager(CloudStorageComputeLogManager, ConfigurableClass):
             prefix: "dagster-test-"
             upload_interval: 30
 
-    There are more configuration examples in the instance documentation guide: https://docs.dagster.io/deployment/dagster-instance#compute-log-storage
+    There are more configuration examples in the instance documentation guide: https://docs.dagster.io/guides/deploy/dagster-instance-configuration#compute-log-storage
 
     Args:
         bucket (str): The name of the GCS bucket to which to log.

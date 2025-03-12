@@ -2,20 +2,15 @@ import inspect
 import json
 import os
 import sys
+from collections.abc import Iterable, Mapping, Sequence
 from functools import lru_cache
-from typing import (
+from typing import (  # noqa: UP035
     TYPE_CHECKING,
     AbstractSet,
     Any,
     Callable,
-    Dict,
-    Iterable,
-    List,
-    Mapping,
     NamedTuple,
     Optional,
-    Sequence,
-    Tuple,
     TypeVar,
     Union,
     overload,
@@ -25,7 +20,6 @@ from typing_extensions import TypeAlias
 
 import dagster._check as check
 import dagster._seven as seven
-from dagster._annotations import experimental
 from dagster._core.code_pointer import (
     CodePointer,
     CustomPointer,
@@ -87,7 +81,7 @@ class ReconstructableRepository(
     ):
         from dagster._core.definitions.repository_definition import RepositoryLoadData
 
-        return super(ReconstructableRepository, cls).__new__(
+        return super().__new__(
             cls,
             pointer=check.inst_param(pointer, "pointer", CodePointer),
             container_image=check.opt_str_param(container_image, "container_image"),
@@ -173,7 +167,7 @@ class ReconstructableRepository(
 
 
 class ReconstructableJobSerializer(NamedTupleSerializer):
-    def before_unpack(self, _, unpacked_dict: Dict[str, Any]) -> Dict[str, Any]:
+    def before_unpack(self, _, unpacked_dict: dict[str, Any]) -> dict[str, Any]:
         solid_selection_str = unpacked_dict.get("solid_selection_str")
         solids_to_execute = unpacked_dict.get("solids_to_execute")
         if solid_selection_str:
@@ -185,7 +179,7 @@ class ReconstructableJobSerializer(NamedTupleSerializer):
     def pack_items(self, *args, **kwargs):
         for k, v in super().pack_items(*args, **kwargs):
             if k == "op_selection":
-                new_v = json.dumps(v["__set__"]) if v else None
+                new_v = json.dumps(v["__set__"]) if v else None  # pyright: ignore[reportCallIssue,reportArgumentType,reportIndexIssue]
                 yield "solid_selection_str", new_v
             else:
                 yield k, v
@@ -233,7 +227,7 @@ class ReconstructableJob(
         asset_check_selection: Optional[AbstractSet[AssetCheckKey]] = None,
     ):
         op_selection = set(op_selection) if op_selection else None
-        return super(ReconstructableJob, cls).__new__(
+        return super().__new__(
             cls,
             repository=check.inst_param(repository, "repository", ReconstructableRepository),
             job_name=check.str_param(job_name, "job_name"),
@@ -402,7 +396,7 @@ def reconstructable(target: Callable[..., "JobDefinition"]) -> ReconstructableJo
                 "``GraphDefinition.to_job``, you must wrap the ``to_job`` call in a function at "
                 "module scope, ie not within any other functions. "
                 "To learn more, check out the docs on ``reconstructable``: "
-                "https://docs.dagster.io/_apidocs/execution#dagster.reconstructable"
+                "https://docs.dagster.io/api/python-api/execution#dagster.reconstructable"
             )
         raise DagsterInvariantViolationError(
             "Reconstructable target should be a function or definition produced "
@@ -449,11 +443,10 @@ def reconstructable(target: Callable[..., "JobDefinition"]) -> ReconstructableJo
     return bootstrap_standalone_recon_job(pointer)
 
 
-@experimental
 def build_reconstructable_job(
     reconstructor_module_name: str,
     reconstructor_function_name: str,
-    reconstructable_args: Optional[Tuple[object]] = None,
+    reconstructable_args: Optional[tuple[object]] = None,
     reconstructable_kwargs: Optional[Mapping[str, object]] = None,
     reconstructor_working_directory: Optional[str] = None,
 ) -> ReconstructableJob:
@@ -523,10 +516,10 @@ def build_reconstructable_job(
         reconstructor_working_directory, "reconstructor_working_directory", os.getcwd()
     )
 
-    _reconstructable_args: List[object] = list(
+    _reconstructable_args: list[object] = list(
         check.opt_tuple_param(reconstructable_args, "reconstructable_args")
     )
-    _reconstructable_kwargs: List[List[Union[str, object]]] = list(
+    _reconstructable_kwargs: list[list[Union[str, object]]] = list(
         (
             [key, value]
             for key, value in check.opt_mapping_param(

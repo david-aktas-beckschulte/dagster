@@ -1,4 +1,5 @@
-from typing import ContextManager, Mapping, Optional, cast
+from collections.abc import Mapping
+from typing import ContextManager, Optional, cast  # noqa: UP035
 
 import dagster._check as check
 import sqlalchemy as db
@@ -88,7 +89,9 @@ class MySQLRunStorage(SqlRunStorage, ConfigurableClass):
             RunStorageSqlMetadata.create_all(conn)
             stamp_alembic_rev(mysql_alembic_config(__file__), conn)
 
-    def optimize_for_webserver(self, statement_timeout: int, pool_recycle: int) -> None:
+    def optimize_for_webserver(
+        self, statement_timeout: int, pool_recycle: int, max_overflow: int
+    ) -> None:
         # When running in dagster-webserver, hold 1 open connection
         # https://github.com/dagster-io/dagster/issues/3719
         self._engine = create_engine(
@@ -96,6 +99,7 @@ class MySQLRunStorage(SqlRunStorage, ConfigurableClass):
             isolation_level=mysql_isolation_level(),
             pool_size=1,
             pool_recycle=pool_recycle,
+            max_overflow=max_overflow,
         )
 
     @property
@@ -146,13 +150,11 @@ class MySQLRunStorage(SqlRunStorage, ConfigurableClass):
 
     def has_built_index(self, migration_name: str) -> None:
         if migration_name not in self._index_migration_cache:
-            self._index_migration_cache[migration_name] = super(
-                MySQLRunStorage, self
-            ).has_built_index(migration_name)
+            self._index_migration_cache[migration_name] = super().has_built_index(migration_name)
         return self._index_migration_cache[migration_name]
 
     def mark_index_built(self, migration_name: str) -> None:
-        super(MySQLRunStorage, self).mark_index_built(migration_name)
+        super().mark_index_built(migration_name)
         if migration_name in self._index_migration_cache:
             del self._index_migration_cache[migration_name]
 

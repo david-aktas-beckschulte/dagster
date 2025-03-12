@@ -1,12 +1,13 @@
 import datetime
 from abc import ABC, abstractmethod
+from collections.abc import Mapping, Sequence
 from functools import cached_property
-from typing import TYPE_CHECKING, Generic, Mapping, Optional, Sequence
+from typing import TYPE_CHECKING, Generic, Optional, Union
 
 from typing_extensions import Self
 
 import dagster._check as check
-from dagster._annotations import experimental, public
+from dagster._annotations import beta, public
 from dagster._core.asset_graph_view.entity_subset import EntitySubset
 from dagster._core.asset_graph_view.serializable_entity_subset import SerializableEntitySubset
 from dagster._core.definitions.asset_key import (
@@ -177,20 +178,42 @@ class AutomationCondition(ABC, Generic[T_EntityKey]):
             AndAutomationCondition,
         )
 
-        # group AndAutomationConditions together
-        if isinstance(self, AndAutomationCondition):
-            return AndAutomationCondition(operands=[*self.operands, other])
-        return AndAutomationCondition(operands=[self, other])
+        # Consolidate any unlabeled `AndAutomationCondition`s together.
+        return AndAutomationCondition(
+            operands=[
+                *(
+                    self.operands
+                    if isinstance(self, AndAutomationCondition) and self.label is None
+                    else (self,)
+                ),
+                *(
+                    other.operands
+                    if isinstance(other, AndAutomationCondition) and other.label is None
+                    else (other,)
+                ),
+            ]
+        )
 
     def __or__(
         self, other: "AutomationCondition[T_EntityKey]"
     ) -> "BuiltinAutomationCondition[T_EntityKey]":
         from dagster._core.definitions.declarative_automation.operators import OrAutomationCondition
 
-        # group OrAutomationConditions together
-        if isinstance(self, OrAutomationCondition):
-            return OrAutomationCondition(operands=[*self.operands, other])
-        return OrAutomationCondition(operands=[self, other])
+        # Consolidate any unlabeled `OrAutomationCondition`s together.
+        return OrAutomationCondition(
+            operands=[
+                *(
+                    self.operands
+                    if isinstance(self, OrAutomationCondition) and self.label is None
+                    else (self,)
+                ),
+                *(
+                    other.operands
+                    if isinstance(other, OrAutomationCondition) and other.label is None
+                    else (other,)
+                ),
+            ]
+        )
 
     def __invert__(self) -> "BuiltinAutomationCondition[T_EntityKey]":
         from dagster._core.definitions.declarative_automation.operators import (
@@ -229,6 +252,21 @@ class AutomationCondition(ABC, Generic[T_EntityKey]):
                     | AutomationCondition.initial_evaluation()
                 ).with_label("handled")
             )
+
+    @public
+    def replace(
+        self, old: Union["AutomationCondition", str], new: "AutomationCondition"
+    ) -> "AutomationCondition":
+        """Replaces all instances of ``old`` across any sub-conditions with ``new``.
+
+        If ``old`` is a string, then conditions with a label matching
+        that string will be replaced.
+
+        Args:
+            old (Union[AutomationCondition, str]): The condition to replace.
+            new (AutomationCondition): The condition to replace with.
+        """
+        return new if old in [self, self.get_label()] else self
 
     @public
     @staticmethod
@@ -460,6 +498,18 @@ class AutomationCondition(ABC, Generic[T_EntityKey]):
 
     @public
     @staticmethod
+    def data_version_changed() -> "BuiltinAutomationCondition[AssetKey]":
+        """Returns an AutomationCondition that is true if the target's data version has been changed
+        since the previous tick.
+        """
+        from dagster._core.definitions.declarative_automation.operands.operands import (
+            DataVersionChangedCondition,
+        )
+
+        return DataVersionChangedCondition()
+
+    @public
+    @staticmethod
     def cron_tick_passed(
         cron_schedule: str, cron_timezone: str = "UTC"
     ) -> "BuiltinAutomationCondition":
@@ -610,7 +660,7 @@ class AutomationCondition(ABC, Generic[T_EntityKey]):
         ).with_label("on_missing")
 
     @public
-    @experimental
+    @beta
     @staticmethod
     def any_downstream_conditions() -> "BuiltinAutomationCondition":
         """Returns an AutomationCondition which represents the union of all distinct downstream conditions."""

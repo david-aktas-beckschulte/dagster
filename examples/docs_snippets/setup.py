@@ -27,15 +27,16 @@ setup(
         "dagster-deltalake",
         "dagster-deltalake-pandas",
         "dagster-deltalake-polars",
+        "dagster-dlt",
         "dagster-duckdb",
         "dagster-duckdb-pandas",
-        "dagster-embedded-elt",
         "dagster-fivetran",
         "dagster-gcp",
         "dagster-graphql",
         "dagster-k8s",
         "dagster-postgres",
         "dagster-slack",
+        "dagster-sling",
         "dagster-gcp-pandas",
         "dagster-gcp-pyspark",
         "dagster-snowflake",
@@ -49,7 +50,7 @@ setup(
             # "'NoneType' object has no attribute 'canvas'" errors in the tests that involve
             # Jupyter notebooks
             "matplotlib-inline<=0.1.3",
-            "moto<5.0",
+            "moto[s3]<5.0",
             "numpy",
             "pandas",
             "pandera",
@@ -63,6 +64,7 @@ setup(
             "dbt-duckdb",
             "xgboost",
             "dagster-webserver[test]",
-        ]
+            "flaky",
+        ],
     },
 )

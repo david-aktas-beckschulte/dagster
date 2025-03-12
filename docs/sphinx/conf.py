@@ -14,7 +14,6 @@ import os
 import sys
 
 ignored_folders = ["dagster-test"]
-additional_folders = ["../../examples/experimental/dagster-airlift"]
 base_path = "../../python_modules"
 python_modules_path = os.path.abspath(base_path)
 libraries_path = os.path.abspath(os.path.join(base_path, "libraries"))
@@ -35,8 +34,6 @@ for folder in os.listdir(libraries_path):
         paths.append(folder_path)
 # Add the _ext folder
 paths.append(os.path.abspath("./_ext"))
-for path in additional_folders:
-    paths.append(os.path.abspath(path))
 
 for path in paths:
     sys.path.insert(0, path)
@@ -70,6 +67,13 @@ extensions = [
     "sphinxcontrib.mdxbuilder",
 ]
 
+# MDX Builder configuration
+mdx_title_suffix = ""
+mdx_title_meta = (
+    " API Documentation - Build Better Data Pipelines | Python Reference Documentation for Dagster"
+)
+mdx_description_meta = " Dagster API | Comprehensive Python API documentation for Dagster, the data orchestration platform. Learn how to build, test, and maintain data pipelines with our detailed guides and examples."
+
 # -- Extension configuration -------------------------------------------------
 
 # -- autodoc
@@ -100,7 +104,6 @@ autodoc_mock_imports = [
     "airflow",
     "azure",
     "coloredlogs",
-    "croniter",
     "dask",
     "databricks",
     "databricks_api",
@@ -131,6 +134,7 @@ autodoc_mock_imports = [
     "pypd",
     "sentry_sdk",
     "slack_sdk",
+    "sling_mac_arm64",
     "snowflake",
     "sshtunnel",
     "toposort",
@@ -148,3 +152,6 @@ autosectionlabel_prefix_document = True
 
 # Only support Google-style docstrings
 napoleon_numpy_docstring = False
+
+# Prevent docs generation for Sphinx-specific files
+exclude_patterns = ["_build", "_ext"]

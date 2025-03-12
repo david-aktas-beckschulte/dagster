@@ -96,11 +96,13 @@ BlockStep = TypedDict(
     },
 )
 
-BuildkiteStep: TypeAlias = Union[CommandStep, GroupStep, TriggerStep, WaitStep, BlockStep]
+BuildkiteStep: TypeAlias = Union[
+    CommandStep, GroupStep, TriggerStep, WaitStep, BlockStep
+]
 BuildkiteLeafStep = Union[CommandStep, TriggerStep, WaitStep]
 BuildkiteTopLevelStep = Union[CommandStep, GroupStep]
 
-UV_PIN = "uv==0.4.30"
+UV_PIN = "uv==0.5.27"
 
 
 def is_command_step(step: BuildkiteStep) -> TypeGuard[CommandStep]:
@@ -158,7 +160,8 @@ def check_for_release() -> bool:
     try:
         git_tag = str(
             subprocess.check_output(
-                ["git", "describe", "--exact-match", "--abbrev=0"], stderr=subprocess.STDOUT
+                ["git", "describe", "--exact-match", "--abbrev=0"],
+                stderr=subprocess.STDOUT,
             )
         ).strip("'b\\n")
     except subprocess.CalledProcessError:
@@ -237,7 +240,11 @@ def parse_package_version(version_str: str) -> packaging.version.Version:
 
 
 def get_commit(rev):
-    return subprocess.check_output(["git", "rev-parse", "--short", rev]).decode("utf-8").strip()
+    return (
+        subprocess.check_output(["git", "rev-parse", "--short", rev])
+        .decode("utf-8")
+        .strip()
+    )
 
 
 def skip_if_no_python_changes(overrides: Optional[Sequence[str]] = None):
@@ -251,7 +258,9 @@ def skip_if_no_python_changes(overrides: Optional[Sequence[str]] = None):
         return None
 
     if overrides and any(
-        Path(override) in path.parents for override in overrides for path in ChangedFiles.all
+        Path(override) in path.parents
+        for override in overrides
+        for path in ChangedFiles.all
     ):
         return None
 
@@ -291,7 +300,10 @@ def skip_if_no_non_docs_markdown_changes():
     if not is_feature_branch():
         return None
 
-    if any(path.suffix == ".md" and Path("docs") not in path.parents for path in ChangedFiles.all):
+    if any(
+        path.suffix == ".md" and Path("docs") not in path.parents
+        for path in ChangedFiles.all
+    ):
         return None
 
     return "No markdown changes outside of docs"
@@ -305,6 +317,16 @@ def has_helm_changes():
 @functools.lru_cache(maxsize=None)
 def has_dagster_airlift_changes():
     return any("dagster-airlift" in str(path) for path in ChangedFiles.all)
+
+
+@functools.lru_cache(maxsize=None)
+def has_dg_or_components_changes():
+    return any(
+        "dagster-dg" in str(path)
+        or "dagster-components" in str(path)
+        or "docs_beta_snippets" in str(path)
+        for path in ChangedFiles.all
+    )
 
 
 @functools.lru_cache(maxsize=None)
@@ -363,7 +385,7 @@ def skip_if_no_docs_changes():
     if message_contains("NO_SKIP"):
         return None
 
-    if not is_feature_branch(os.getenv("BUILDKITE_BRANCH")):
+    if not is_feature_branch(os.getenv("BUILDKITE_BRANCH")):  # pyright: ignore[reportArgumentType]
         return None
 
     # If anything changes in the docs directory

@@ -3,7 +3,11 @@ from glob import glob
 from pathlib import Path
 from typing import Iterable, List, Optional
 
-from dagster_buildkite.defines import GCP_CREDS_FILENAME, GCP_CREDS_LOCAL_FILE, GIT_REPO_ROOT
+from dagster_buildkite.defines import (
+    GCP_CREDS_FILENAME,
+    GCP_CREDS_LOCAL_FILE,
+    GIT_REPO_ROOT,
+)
 from dagster_buildkite.package_spec import PackageSpec
 from dagster_buildkite.python_version import AvailablePythonVersion
 from dagster_buildkite.step_builder import BuildkiteQueue
@@ -12,6 +16,7 @@ from dagster_buildkite.utils import (
     BuildkiteStep,
     connect_sibling_docker_container,
     has_dagster_airlift_changes,
+    has_dg_or_components_changes,
     has_storage_test_fixture_changes,
     network_buildkite_container,
     skip_if_not_airlift_or_dlift_commit,
@@ -20,27 +25,37 @@ from dagster_buildkite.utils import (
 
 
 def build_example_packages_steps() -> List[BuildkiteStep]:
-    custom_example_pkg_roots = [pkg.directory for pkg in EXAMPLE_PACKAGES_WITH_CUSTOM_CONFIG]
+    custom_example_pkg_roots = [
+        pkg.directory for pkg in EXAMPLE_PACKAGES_WITH_CUSTOM_CONFIG
+    ]
     example_packages_with_standard_config = [
         PackageSpec(pkg)
         for pkg in (
             _get_uncustomized_pkg_roots("examples", custom_example_pkg_roots)
-            + _get_uncustomized_pkg_roots("examples/experimental", custom_example_pkg_roots)
+            + _get_uncustomized_pkg_roots(
+                "examples/experimental", custom_example_pkg_roots
+            )
         )
         if pkg != "examples/deploy_ecs"
     ]
 
-    example_packages = EXAMPLE_PACKAGES_WITH_CUSTOM_CONFIG + example_packages_with_standard_config
+    example_packages = (
+        EXAMPLE_PACKAGES_WITH_CUSTOM_CONFIG + example_packages_with_standard_config
+    )
 
     return build_steps_from_package_specs(example_packages)
 
 
 def build_library_packages_steps() -> List[BuildkiteStep]:
-    custom_library_pkg_roots = [pkg.directory for pkg in LIBRARY_PACKAGES_WITH_CUSTOM_CONFIG]
+    custom_library_pkg_roots = [
+        pkg.directory for pkg in LIBRARY_PACKAGES_WITH_CUSTOM_CONFIG
+    ]
     library_packages_with_standard_config = [
         *[
             PackageSpec(pkg)
-            for pkg in _get_uncustomized_pkg_roots("python_modules", custom_library_pkg_roots)
+            for pkg in _get_uncustomized_pkg_roots(
+                "python_modules", custom_library_pkg_roots
+            )
         ],
         *[
             PackageSpec(pkg)
@@ -55,13 +70,9 @@ def build_library_packages_steps() -> List[BuildkiteStep]:
     )
 
 
-def build_dagster_ui_screenshot_steps() -> List[BuildkiteStep]:
-    return build_steps_from_package_specs(
-        [PackageSpec("docs/dagster-ui-screenshot", run_pytest=False)]
-    )
-
-
-def build_steps_from_package_specs(package_specs: List[PackageSpec]) -> List[BuildkiteStep]:
+def build_steps_from_package_specs(
+    package_specs: List[PackageSpec],
+) -> List[BuildkiteStep]:
     steps: List[BuildkiteStep] = []
     all_packages = sorted(
         package_specs,
@@ -80,10 +91,13 @@ _PACKAGE_TYPE_ORDER = ["core", "extension", "example", "infrastructure", "unknow
 # Find packages under a root subdirectory that are not configured above.
 def _get_uncustomized_pkg_roots(root: str, custom_pkg_roots: List[str]) -> List[str]:
     all_files_in_root = [
-        os.path.relpath(p, GIT_REPO_ROOT) for p in glob(os.path.join(GIT_REPO_ROOT, root, "*"))
+        os.path.relpath(p, GIT_REPO_ROOT)
+        for p in glob(os.path.join(GIT_REPO_ROOT, root, "*"))
     ]
     return [
-        p for p in all_files_in_root if p not in custom_pkg_roots and os.path.exists(f"{p}/tox.ini")
+        p
+        for p in all_files_in_root
+        if p not in custom_pkg_roots and os.path.exists(f"{p}/tox.ini")
     ]
 
 
@@ -253,7 +267,9 @@ postgres_extra_cmds = [
     "docker-compose up -d --remove-orphans",  # clean up in hooks/pre-exit,
     "docker-compose -f docker-compose-multi.yml up -d",  # clean up in hooks/pre-exit,
     *network_buildkite_container("postgres"),
-    *connect_sibling_docker_container("postgres", "test-postgres-db", "POSTGRES_TEST_DB_HOST"),
+    *connect_sibling_docker_container(
+        "postgres", "test-postgres-db", "POSTGRES_TEST_DB_HOST"
+    ),
     *network_buildkite_container("postgres_multi"),
     *connect_sibling_docker_container(
         "postgres_multi",
@@ -272,14 +288,6 @@ postgres_extra_cmds = [
 # Some Dagster packages have more involved test configs or support only certain Python version;
 # special-case those here
 EXAMPLE_PACKAGES_WITH_CUSTOM_CONFIG: List[PackageSpec] = [
-    PackageSpec(
-        "examples/with_airflow",
-        unsupported_python_versions=[
-            AvailablePythonVersion.V3_10,
-            AvailablePythonVersion.V3_11,
-            AvailablePythonVersion.V3_12,
-        ],
-    ),
     PackageSpec(
         "examples/assets_smoke_test",
     ),
@@ -303,7 +311,8 @@ EXAMPLE_PACKAGES_WITH_CUSTOM_CONFIG: List[PackageSpec] = [
         # snippets in all python versions since we are testing the core code exercised by the
         # snippets against all supported python versions.
         unsupported_python_versions=AvailablePythonVersion.get_all_except_default(),
-        pytest_tox_factors=["all", "integrations"],
+        pytest_tox_factors=["all", "integrations", "docs_snapshot_test"],
+        always_run_if=has_dg_or_components_changes,
     ),
     PackageSpec(
         "examples/project_fully_featured",
@@ -364,12 +373,6 @@ EXAMPLE_PACKAGES_WITH_CUSTOM_CONFIG: List[PackageSpec] = [
         "examples/quickstart_snowflake",
         pytest_tox_factors=["pypi"],
     ),
-    PackageSpec(
-        "examples/experimental/dagster-blueprints",
-    ),
-    PackageSpec(
-        "examples/experimental/dagster-airlift",
-    ),
     # Runs against live dbt cloud instance, we only want to run on commits and on the
     # nightly build
     PackageSpec(
@@ -385,16 +388,16 @@ EXAMPLE_PACKAGES_WITH_CUSTOM_CONFIG: List[PackageSpec] = [
         timeout_in_minutes=30,
         queue=BuildkiteQueue.DOCKER,
     ),
+    # Federation tutorial spins up multiple airflow instances, slow to run - use docker queue to ensure
+    # beefier instance
     PackageSpec(
-        "examples/experimental/dagster-airlift/perf-harness",
-        always_run_if=has_dagster_airlift_changes,
+        "examples/airlift-federation-tutorial",
+        skip_if=skip_if_not_airlift_or_dlift_commit,
+        timeout_in_minutes=30,
+        queue=BuildkiteQueue.DOCKER,
     ),
     PackageSpec(
         "examples/airlift-migration-tutorial",
-        always_run_if=has_dagster_airlift_changes,
-    ),
-    PackageSpec(
-        "examples/experimental/dagster-airlift/kitchen-sink",
         always_run_if=has_dagster_airlift_changes,
     ),
     PackageSpec(
@@ -418,7 +421,9 @@ EXAMPLE_PACKAGES_WITH_CUSTOM_CONFIG: List[PackageSpec] = [
 ]
 
 
-def _unsupported_dagster_python_versions(tox_factor: Optional[str]) -> List[AvailablePythonVersion]:
+def _unsupported_dagster_python_versions(
+    tox_factor: Optional[str],
+) -> List[AvailablePythonVersion]:
     if tox_factor == "general_tests_old_protobuf":
         return [AvailablePythonVersion.V3_11, AvailablePythonVersion.V3_12]
 
@@ -472,6 +477,7 @@ LIBRARY_PACKAGES_WITH_CUSTOM_CONFIG: List[PackageSpec] = [
             "core_tests",
             "daemon_sensor_tests",
             "daemon_tests",
+            "declarative_automation_tests",
             "definitions_tests",
             "general_tests",
             "general_tests_old_protobuf",
@@ -535,7 +541,7 @@ LIBRARY_PACKAGES_WITH_CUSTOM_CONFIG: List[PackageSpec] = [
         "python_modules/libraries/dagster-dbt",
         pytest_tox_factors=[
             f"{deps_factor}-{command_factor}"
-            for deps_factor in ["dbt17", "dbt18"]
+            for deps_factor in ["dbt17", "dbt18", "dbt19"]
             for command_factor in ["cloud", "core-main", "core-derived-metadata"]
         ],
     ),
@@ -739,6 +745,14 @@ LIBRARY_PACKAGES_WITH_CUSTOM_CONFIG: List[PackageSpec] = [
             # duckdb
             AvailablePythonVersion.V3_12,
         ],
+    ),
+    PackageSpec(
+        "python_modules/libraries/dagster-airlift/perf-harness",
+        always_run_if=has_dagster_airlift_changes,
+    ),
+    PackageSpec(
+        "python_modules/libraries/dagster-airlift/kitchen-sink",
+        always_run_if=has_dagster_airlift_changes,
     ),
     PackageSpec(
         ".buildkite/dagster-buildkite",

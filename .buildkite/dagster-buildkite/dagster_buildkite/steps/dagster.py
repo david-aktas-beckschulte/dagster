@@ -8,7 +8,10 @@ from dagster_buildkite.python_version import AvailablePythonVersion
 from dagster_buildkite.step_builder import CommandStepBuilder
 from dagster_buildkite.steps.helm import build_helm_steps
 from dagster_buildkite.steps.integration import build_integration_steps
-from dagster_buildkite.steps.packages import build_library_packages_steps
+from dagster_buildkite.steps.packages import (
+    build_example_packages_steps,
+    build_library_packages_steps,
+)
 from dagster_buildkite.steps.test_project import build_test_project_steps
 from dagster_buildkite.utils import (
     UV_PIN,
@@ -46,6 +49,8 @@ def build_dagster_steps() -> List[BuildkiteStep]:
     # instance, a directory of unrelated scripts counts as a package. All packages must have a
     # toxfile that defines the tests for that package.
     steps += build_library_packages_steps()
+
+    steps += build_example_packages_steps()
 
     steps += build_helm_steps()
     steps += build_sql_schema_check_steps()
@@ -112,6 +117,8 @@ def build_repo_wide_pyright_steps() -> List[BuildkiteStep]:
                 .run(
                     "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y",
                     f'pip install -U "{UV_PIN}"',
+                    "uv venv",
+                    "source .venv/bin/activate",
                     "make install_pyright",
                     "make pyright",
                 )
@@ -122,6 +129,8 @@ def build_repo_wide_pyright_steps() -> List[BuildkiteStep]:
                 .run(
                     "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y",
                     f'pip install -U "{UV_PIN}"',
+                    "uv venv",
+                    "source .venv/bin/activate",
                     "make install_pyright",
                     "make rebuild_pyright_pins",
                 )
@@ -186,7 +195,9 @@ def build_graphql_python_client_backcompat_steps() -> List[CommandStep]:
             "dagster-graphql-client query check",
         )
         .with_skip(
-            skip_graphql_if_no_changes_to_dependencies(["dagster", "dagster-graphql", "automation"])
+            skip_graphql_if_no_changes_to_dependencies(
+                ["dagster", "dagster-graphql", "automation"]
+            )
         )
         .build()
     ]

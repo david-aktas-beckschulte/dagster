@@ -12,13 +12,12 @@ from dagster._generate.generate import _should_skip_file
 EXAMPLES_TO_IGNORE = [
     "deploy_k8s_beta",
     "docs_beta_snippets",
+    "docs_projects",
     "docs_snippets",
     "experimental",
     "use_case_repository",
     "airlift-mwaa-example",
-    "airlift-migration-tutorial",
     "starlift-demo",
-    "airlift-federation-tutorial",
     "pyproject.toml",
     "README.md",
     "temp_pins.txt",
@@ -38,6 +37,7 @@ AVAILABLE_EXAMPLES = [
     "development_to_production",
     "feature_graph_backed_assets",
     "getting_started_etl_tutorial",
+    "google_drive_factory",
     "project_analytics",
     "project_dagster_university_start",
     "project_du_dbt_starter",
@@ -48,12 +48,13 @@ AVAILABLE_EXAMPLES = [
     "quickstart_snowflake",
     "tutorial",
     "tutorial_notebook_assets",
-    "with_airflow",
     "with_great_expectations",
     "with_openai",
     "with_pyspark",
     "with_pyspark_emr",
     "with_wandb",
+    "airlift-federation-tutorial",
+    "airlift-migration-tutorial",
 ]
 
 

@@ -11,21 +11,22 @@ import {
 } from '@dagster-io/ui-components';
 import {useState} from 'react';
 import {Link} from 'react-router-dom';
+import {SensorAlertDetails} from 'shared/sensors/SensorAlertDetails.oss';
 import styled from 'styled-components';
 
 import {EditCursorDialog} from './EditCursorDialog';
 import {SensorMonitoredAssets} from './SensorMonitoredAssets';
 import {SensorResetButton} from './SensorResetButton';
 import {SensorSwitch} from './SensorSwitch';
-import {SensorFragment} from './types/SensorFragment.types';
 import {usePermissionsForLocation} from '../app/Permissions';
+import {EvaluateTickButtonSensor} from '../ticks/EvaluateTickButtonSensor';
+import {SensorFragment} from './types/SensorFragment.types';
 import {QueryRefreshCountdown, QueryRefreshState} from '../app/QueryRefresh';
 import {AutomationTargetList} from '../automation/AutomationTargetList';
 import {AutomationAssetSelectionFragment} from '../automation/types/AutomationAssetSelectionFragment.types';
 import {InstigationStatus, SensorType} from '../graphql/types';
 import {RepositoryLink} from '../nav/RepositoryLink';
 import {TimestampDisplay} from '../schedules/TimestampDisplay';
-import {SensorDryRunDialog} from '../ticks/SensorDryRunDialog';
 import {TickStatusTag} from '../ticks/TickStatusTag';
 import {RepoAddress} from '../workspace/types';
 
@@ -92,7 +93,6 @@ export const SensorDetails = ({
     sensor.sensorState.typeSpecificData.__typename === 'SensorData' &&
     sensor.sensorState.typeSpecificData.lastCursor;
 
-  const [showTestTickDialog, setShowTestTickDialog] = useState(false);
   const running = status === InstigationStatus.RUNNING;
 
   return (
@@ -114,32 +114,15 @@ export const SensorDetails = ({
         right={
           <Box margin={{top: 4}} flex={{direction: 'row', alignItems: 'center', gap: 8}}>
             <QueryRefreshCountdown refreshState={refreshState} />
-            <Tooltip
-              canShow={sensor.sensorType !== SensorType.STANDARD}
-              content="Testing not available for this sensor type"
-              placement="top-end"
-            >
-              <Button
-                disabled={sensor.sensorType !== SensorType.STANDARD}
-                onClick={() => {
-                  setShowTestTickDialog(true);
-                }}
-              >
-                Test sensor
-              </Button>
-            </Tooltip>
+            <EvaluateTickButtonSensor
+              cursor={cursor || ''}
+              name={sensor.name}
+              repoAddress={repoAddress}
+              jobName={sensor.targets?.[0]?.pipelineName || ''}
+              sensorType={sensor.sensorType}
+            />
           </Box>
         }
-      />
-      <SensorDryRunDialog
-        isOpen={showTestTickDialog}
-        onClose={() => {
-          setShowTestTickDialog(false);
-        }}
-        currentCursor={cursor || ''}
-        name={sensor.name}
-        repoAddress={repoAddress}
-        jobName={sensor.targets?.[0]?.pipelineName || ''}
       />
       <MetadataTableWIP>
         <tbody>
@@ -251,6 +234,7 @@ export const SensorDetails = ({
               </td>
             </tr>
           ) : null}
+          <SensorAlertDetails repoAddress={repoAddress} sensorName={name} />
         </tbody>
       </MetadataTableWIP>
     </>

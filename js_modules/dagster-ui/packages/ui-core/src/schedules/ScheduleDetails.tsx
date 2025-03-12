@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Code,
   Group,
   Heading,
@@ -8,8 +7,8 @@ import {
   PageHeader,
   Tag,
 } from '@dagster-io/ui-components';
-import {useState} from 'react';
 import {Link} from 'react-router-dom';
+import {ScheduleAlertDetails} from 'shared/schedules/ScheduleAlertDetails.oss';
 import styled from 'styled-components';
 
 import {SchedulePartitionStatus} from './SchedulePartitionStatus';
@@ -23,7 +22,7 @@ import {AutomationTargetList} from '../automation/AutomationTargetList';
 import {AutomationAssetSelectionFragment} from '../automation/types/AutomationAssetSelectionFragment.types';
 import {InstigationStatus} from '../graphql/types';
 import {RepositoryLink} from '../nav/RepositoryLink';
-import {EvaluateScheduleDialog} from '../ticks/EvaluateScheduleDialog';
+import {EvaluateTickButtonSchedule} from '../ticks/EvaluateTickButtonSchedule';
 import {TickStatusTag} from '../ticks/TickStatusTag';
 import {RepoAddress} from '../workspace/types';
 
@@ -41,8 +40,6 @@ export const ScheduleDetails = (props: {
   const {status, ticks} = scheduleState;
   const latestTick = ticks.length > 0 ? ticks[0] : null;
   const running = status === InstigationStatus.RUNNING;
-
-  const [showTestTickDialog, setShowTestTickDialog] = useState(false);
 
   return (
     <>
@@ -62,25 +59,13 @@ export const ScheduleDetails = (props: {
         right={
           <Box flex={{direction: 'row', alignItems: 'center', gap: 8}}>
             <QueryRefreshCountdown refreshState={refreshState} />
-            <Button
-              onClick={() => {
-                setShowTestTickDialog(true);
-              }}
-            >
-              Test Schedule
-            </Button>
+            <EvaluateTickButtonSchedule
+              name={schedule.name}
+              repoAddress={repoAddress}
+              jobName={pipelineName}
+            />
           </Box>
         }
-      />
-      <EvaluateScheduleDialog
-        key={showTestTickDialog ? '1' : '0'} // change key to reset dialog state
-        isOpen={showTestTickDialog}
-        onClose={() => {
-          setShowTestTickDialog(false);
-        }}
-        name={schedule.name}
-        repoAddress={repoAddress}
-        jobName={pipelineName}
       />
       <MetadataTableWIP>
         <tbody>
@@ -183,6 +168,7 @@ export const ScheduleDetails = (props: {
               <td>{executionTimezone}</td>
             </tr>
           ) : null}
+          <ScheduleAlertDetails repoAddress={repoAddress} scheduleName={name} />
         </tbody>
       </MetadataTableWIP>
     </>

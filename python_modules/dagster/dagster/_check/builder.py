@@ -1,25 +1,22 @@
 import collections.abc
 import sys
+from collections.abc import Iterable, Mapping
 from contextlib import contextmanager
 from contextvars import ContextVar
 from typing import (
+    Annotated,
     Any,
     Callable,
     ForwardRef,
     Generic,
     Literal,
-    Mapping,
     NamedTuple,
     Optional,
-    Tuple,
-    Type,
     TypeVar,
     Union,
     get_args,
     get_origin,
 )
-
-from typing_extensions import Annotated
 
 from dagster._check.functions import CheckError, TypeOrTupleOfTypes, failed, invariant
 
@@ -31,7 +28,8 @@ except ImportError:
 
 NoneType = type(None)
 
-_contextual_ns: ContextVar[Mapping[str, Type]] = ContextVar("_contextual_ns", default={})
+_contextual_ns: ContextVar[Mapping[str, type]] = ContextVar("_contextual_ns", default={})
+INJECTED_DEFAULT_VALS_LOCAL_VAR = "__injected_defaults__"
 
 
 class ImportFrom(NamedTuple):
@@ -87,7 +85,7 @@ class EvalContext(NamedTuple):
 
     @staticmethod
     @contextmanager
-    def contextual_namespace(ns: Mapping[str, Type]):
+    def contextual_namespace(ns: Mapping[str, type]):
         token = _contextual_ns.set(ns)
         try:
             yield
@@ -115,7 +113,7 @@ class EvalContext(NamedTuple):
             **self.local_ns,
         }
 
-    def eval_forward_ref(self, ref: ForwardRef) -> Optional[Type]:
+    def eval_forward_ref(self, ref: ForwardRef) -> Optional[type]:
         if ref.__forward_arg__ in self.lazy_imports:
             # if we are going to add a lazy import for the type,
             # return a placeholder to grab the name from
@@ -165,7 +163,7 @@ def _coerce_type(
     # coerce input type in to the type we want to pass to the check call
 
     # Any type translates to passing None for the of_type argument
-    if ttype is Any:
+    if ttype is Any or ttype is None:
         return None
 
     # assume naked strings should be ForwardRefs
@@ -185,6 +183,11 @@ def _coerce_type(
         _process_annotated(ttype, args, eval_ctx)
         return _coerce_type(args[0], eval_ctx)
 
+    # cant do isinstance against TypeDict (and we cant subclass check for it)
+    # so just coerce any dict subclasses in to dict
+    if isinstance(ttype, type) and issubclass(ttype, dict):
+        return dict
+
     # Unions should become a tuple of types to pass to the of_type argument
     # ultimately used as second arg in isinstance(target, tuple_of_types)
     if origin in (UnionType, Union):
@@ -203,8 +206,8 @@ def _coerce_type(
 
 
 def _container_pair_args(
-    args: Tuple[Type, ...], eval_ctx
-) -> Tuple[Optional[TypeOrTupleOfTypes], Optional[TypeOrTupleOfTypes]]:
+    args: tuple[type, ...], eval_ctx
+) -> tuple[Optional[TypeOrTupleOfTypes], Optional[TypeOrTupleOfTypes]]:
     # process tuple of types as if its two arguments to a container type
 
     if len(args) == 2:
@@ -214,7 +217,7 @@ def _container_pair_args(
 
 
 def _container_single_arg(
-    args: Tuple[Type, ...], eval_ctx: EvalContext
+    args: tuple[type, ...], eval_ctx: EvalContext
 ) -> Optional[TypeOrTupleOfTypes]:
     # process tuple of types as if its the single argument to a container type
 
@@ -275,7 +278,7 @@ def _process_annotated(ttype, args, eval_ctx: EvalContext):
 
 
 def build_check_call_str(
-    ttype: Type,
+    ttype: type,
     name: str,
     eval_ctx: EvalContext,
 ) -> str:
@@ -379,6 +382,9 @@ def build_check_call_str(
                     elif is_record(inner_origin):
                         it = _name(inner_origin)
                         return f'{name} if {name} is None or isinstance({name}, {it}) else check.opt_inst_param({name}, "{name}", {it})'
+                    elif inner_origin is Callable or inner_origin is collections.abc.Callable:
+                        return f'{name} if {name} is None else check.opt_callable_param({name}, "{name}")'
+
             # union
             else:
                 tuple_types = _coerce_type(ttype, eval_ctx)
@@ -394,3 +400,42 @@ def build_check_call_str(
                 return f'{name} if isinstance({name}, {it}) else check.inst_param({name}, "{name}", {it})'
 
         failed(f"Unhandled {ttype}")
+
+
+def build_args_and_assignment_strs(
+    fn_args: Iterable[str],
+    defaults: Mapping[str, Any],
+    kw_only: bool,
+) -> tuple[str, str]:
+    """Utility function to create the arguments to the function as well as any
+    assignment calls that need to happen for default values.
+    """
+    args = []
+    set_calls = []
+    for arg in fn_args:
+        if arg in defaults:
+            default = defaults[arg]
+            if default is None:
+                args.append(f"{arg} = None")
+            # dont share class instance of default empty containers
+            elif default == []:
+                args.append(f"{arg} = None")
+                set_calls.append(f"{arg} = {arg} if {arg} is not None else []")
+            elif default == {}:
+                args.append(f"{arg} = None")
+                set_calls.append(f"{arg} = {arg} if {arg} is not None else {'{}'}")
+            # fallback to direct reference if unknown
+            else:
+                args.append(f"{arg} = {INJECTED_DEFAULT_VALS_LOCAL_VAR}['{arg}']")
+        else:
+            args.append(arg)
+
+    args_str = ""
+    if args:
+        args_str = f", {'*,' if kw_only else ''} {', '.join(args)}"
+
+    set_calls_str = ""
+    if set_calls:
+        set_calls_str = "\n    ".join(set_calls)
+
+    return args_str, set_calls_str

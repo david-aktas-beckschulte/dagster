@@ -8,7 +8,11 @@ import {AssetNodeMenuProps, useAssetNodeMenu} from './AssetNodeMenu';
 import {buildAssetNodeStatusContent} from './AssetNodeStatusContent';
 import {ContextMenuWrapper} from './ContextMenuWrapper';
 import {LiveDataForNode} from './Utils';
-import {ASSET_NODE_NAME_MAX_LENGTH} from './layout';
+import {
+  ASSET_NODE_NAME_MAX_LENGTH,
+  ASSET_NODE_STATUS_ROW_HEIGHT,
+  ASSET_NODE_TAGS_HEIGHT,
+} from './layout';
 import {gql} from '../apollo-client';
 import {AssetNodeFragment} from './types/AssetNode.types';
 import {withMiddleTruncation} from '../app/Util';
@@ -26,57 +30,67 @@ interface Props {
   definition: AssetNodeFragment;
   selected: boolean;
   kindFilter?: StaticSetFilter<string>;
+  onChangeAssetSelection?: (selection: string) => void;
 }
 
-export const AssetNode = React.memo(({definition, selected, kindFilter}: Props) => {
-  const {liveData} = useAssetLiveData(definition.assetKey);
-  return (
-    <AssetInsetForHoverEffect>
-      <Box
-        flex={{direction: 'row', justifyContent: 'space-between', alignItems: 'center'}}
-        style={{minHeight: 24}}
-      >
-        <StaleReasonsTag liveData={liveData} assetKey={definition.assetKey} />
-        <ChangedReasonsTag
-          changedReasons={definition.changedReasons}
-          assetKey={definition.assetKey}
-        />
-      </Box>
-      <AssetNodeContainer $selected={selected}>
-        <AssetNodeBox $selected={selected} $isMaterializable={definition.isMaterializable}>
-          <AssetNameRow definition={definition} />
-          <Box style={{padding: '6px 8px'}} flex={{direction: 'column', gap: 4}} border="top">
-            {definition.description ? (
-              <AssetDescription $color={Colors.textDefault()}>
-                {markdownToPlaintext(definition.description).split('\n')[0]}
-              </AssetDescription>
-            ) : (
-              <AssetDescription $color={Colors.textLight()}>No description</AssetDescription>
-            )}
-            {definition.isPartitioned && definition.isMaterializable && (
-              <PartitionCountTags definition={definition} liveData={liveData} />
-            )}
-          </Box>
+export const AssetNode = React.memo(
+  ({definition, selected, kindFilter, onChangeAssetSelection}: Props) => {
+    const {liveData} = useAssetLiveData(definition.assetKey);
+    const hasChecks = (liveData?.assetChecks || []).length > 0;
 
-          <AssetNodeStatusRow definition={definition} liveData={liveData} />
-          {(liveData?.assetChecks || []).length > 0 && (
-            <AssetNodeChecksRow definition={definition} liveData={liveData} />
-          )}
-        </AssetNodeBox>
-        <Box flex={{direction: 'row-reverse', gap: 8}}>
-          {definition.kinds.map((kind) => (
-            <AssetKind
-              key={kind}
-              kind={kind}
-              style={{position: 'relative', paddingTop: 7, margin: 0}}
-              currentPageFilter={kindFilter}
+    const marginTopForCenteringNode = !hasChecks ? ASSET_NODE_STATUS_ROW_HEIGHT / 2 : 0;
+
+    return (
+      <AssetInsetForHoverEffect>
+        <AssetNodeContainer $selected={selected}>
+          <Box
+            flex={{direction: 'row', justifyContent: 'space-between', alignItems: 'center'}}
+            style={{minHeight: ASSET_NODE_TAGS_HEIGHT, marginTop: marginTopForCenteringNode}}
+          >
+            <StaleReasonsTag liveData={liveData} assetKey={definition.assetKey} />
+            <ChangedReasonsTag
+              changedReasons={definition.changedReasons}
+              assetKey={definition.assetKey}
             />
-          ))}
-        </Box>
-      </AssetNodeContainer>
-    </AssetInsetForHoverEffect>
-  );
-}, isEqual);
+          </Box>
+          <AssetNodeBox $selected={selected} $isMaterializable={definition.isMaterializable}>
+            <AssetNameRow definition={definition} />
+            <Box style={{padding: '6px 8px'}} flex={{direction: 'column', gap: 4}} border="top">
+              {definition.description ? (
+                <AssetDescription $color={Colors.textDefault()}>
+                  {markdownToPlaintext(definition.description).split('\n')[0]}
+                </AssetDescription>
+              ) : (
+                <AssetDescription $color={Colors.textLight()}>No description</AssetDescription>
+              )}
+              {definition.isPartitioned && definition.isMaterializable && (
+                <PartitionCountTags definition={definition} liveData={liveData} />
+              )}
+            </Box>
+
+            <AssetNodeStatusRow definition={definition} liveData={liveData} />
+            {hasChecks && <AssetNodeChecksRow definition={definition} liveData={liveData} />}
+          </AssetNodeBox>
+          <Box
+            style={{minHeight: ASSET_NODE_TAGS_HEIGHT}}
+            flex={{alignItems: 'center', direction: 'row-reverse', gap: 8}}
+          >
+            {definition.kinds.map((kind) => (
+              <AssetKind
+                key={kind}
+                kind={kind}
+                style={{position: 'relative', margin: 0}}
+                currentPageFilter={kindFilter}
+                onChangeAssetSelection={onChangeAssetSelection}
+              />
+            ))}
+          </Box>
+        </AssetNodeContainer>
+      </AssetInsetForHoverEffect>
+    );
+  },
+  isEqual,
+);
 
 export const AssetNameRow = ({definition}: {definition: AssetNodeFragment}) => {
   const displayName = definition.assetKey.path[definition.assetKey.path.length - 1]!;
@@ -272,7 +286,7 @@ export const ASSET_NODE_FRAGMENT = gql`
 `;
 
 export const AssetInsetForHoverEffect = styled.div`
-  padding: 10px 4px 2px 4px;
+  padding: 2px 4px 2px 4px;
   height: 100%;
 
   & *:focus {
@@ -283,7 +297,7 @@ export const AssetInsetForHoverEffect = styled.div`
 export const AssetNodeContainer = styled.div<{$selected: boolean}>`
   user-select: none;
   cursor: pointer;
-  padding: 6px;
+  padding: 0 6px;
   overflow: clip;
 `;
 
@@ -307,6 +321,7 @@ export const AssetNodeBox = styled.div<{
   background: ${Colors.backgroundDefault()};
   border-radius: 10px;
   position: relative;
+  margin: 6px 0;
   transition: all 150ms linear;
   &:hover {
     ${(p) => !p.$selected && `border: 2px solid ${Colors.lineageNodeBorderHover()};`};
@@ -322,6 +337,7 @@ export const AssetNodeBox = styled.div<{
 const NameCSS: CSSObject = {
   padding: '3px 0 3px 6px',
   color: Colors.textDefault(),
+  fontSize: 14,
   fontFamily: FontFamily.monospace,
   fontWeight: 600,
 };

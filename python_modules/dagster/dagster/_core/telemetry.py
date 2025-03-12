@@ -1,5 +1,5 @@
 """As an open source project, we collect usage statistics to inform development priorities.
-For more information, check out the docs at https://docs.dagster.io/getting-started/telemetry'.
+For more information, check out the docs at https://docs.dagster.io/about/telemetry'.
 
 To see the logs we send, inspect $DAGSTER_HOME/logs/ if $DAGSTER_HOME is set or ~/.dagster/logs/
 
@@ -12,27 +12,17 @@ For local development:
 
 import datetime
 import hashlib
+import inspect
 import json
 import logging
 import os
 import platform
 import sys
 import uuid
+from collections.abc import Mapping, Sequence
 from functools import wraps
 from logging.handlers import RotatingFileHandler
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Mapping,
-    NamedTuple,
-    Optional,
-    Sequence,
-    Tuple,
-    TypeVar,
-    Union,
-    overload,
-)
+from typing import TYPE_CHECKING, Any, Callable, NamedTuple, Optional, TypeVar, Union, overload
 
 import click
 import yaml
@@ -145,15 +135,18 @@ def _telemetry_wrapper(
             f"Attempted to log telemetry for function {f.__name__} that is not in telemetry whitelisted "
             f"functions list: {TELEMETRY_WHITELISTED_FUNCTIONS}."
         )
+    sig = inspect.signature(f)
+    instance_index = None
+    for i, name in enumerate(sig.parameters):
+        if name == "instance":
+            instance_index = i
+            break
 
-    var_names = f.__code__.co_varnames
-    try:
-        instance_index = var_names.index("instance")
-    except ValueError as e:
+    if instance_index is None:
         raise DagsterInvariantViolationError(
             "Attempted to log telemetry for function {name} that does not take a DagsterInstance "
             "in a parameter called 'instance'"
-        ) from e
+        )
 
     @wraps(f)
     def wrap(*args: P.args, **kwargs: P.kwargs) -> T:
@@ -257,7 +250,7 @@ class TelemetryEntry(
         metadata = check.opt_mapping_param(metadata, "metadata")
         run_storage_id = check.opt_str_param(run_storage_id, "run_storage_id", default="")
 
-        return super(TelemetryEntry, cls).__new__(
+        return super().__new__(
             cls,
             action=action,
             client_time=client_time,
@@ -395,7 +388,7 @@ def write_telemetry_log_line(log_line: object) -> None:
 
 def _get_instance_telemetry_info(
     instance: DagsterInstance,
-) -> Tuple[bool, Optional[str], Optional[str]]:
+) -> tuple[bool, Optional[str], Optional[str]]:
     from dagster._core.storage.runs import SqlRunStorage
 
     check.inst_param(instance, "instance", DagsterInstance)
@@ -427,7 +420,7 @@ def _get_telemetry_instance_id() -> Optional[str]:
     if not os.path.exists(telemetry_id_path):
         return
 
-    with open(telemetry_id_path, "r", encoding="utf8") as telemetry_id_file:
+    with open(telemetry_id_path, encoding="utf8") as telemetry_id_file:
         telemetry_id_yaml = yaml.safe_load(telemetry_id_file)
         if (
             telemetry_id_yaml
@@ -772,10 +765,10 @@ def log_dagster_event(event: DagsterEvent, job_context: PlanOrchestrationContext
 
 
 TELEMETRY_TEXT = """
-  %(telemetry)s
+  {telemetry}
 
   As an open-source project, we collect usage statistics to inform development priorities. For more
-  information, read https://docs.dagster.io/getting-started/telemetry.
+  information, read https://docs.dagster.io/about/telemetry.
 
   We will not see or store any data that is processed by your code.
 
@@ -783,11 +776,11 @@ TELEMETRY_TEXT = """
 
     telemetry:
       enabled: false
-""" % {"telemetry": click.style("Telemetry:", fg="blue", bold=True)}
+""".format(telemetry=click.style("Telemetry:", fg="blue", bold=True))
 
 SLACK_PROMPT = """
-  %(welcome)s
+  {welcome}
 
   If you have any questions or would like to engage with the Dagster team, please join us on Slack
   (https://bit.ly/39dvSsF).
-""" % {"welcome": click.style("Welcome to Dagster!", bold=True)}
+""".format(welcome=click.style("Welcome to Dagster!", bold=True))

@@ -1,9 +1,15 @@
-import qs from 'qs';
 import {useCallback, useContext, useEffect, useRef} from 'react';
 import {useAugmentSearchResults} from 'shared/search/useAugmentSearchResults.oss';
 
-import {GroupMetadata, buildAssetCountBySection} from './BuildAssetSearchResults';
+import {buildAssetCountBySection} from './BuildAssetSearchResults';
 import {QueryResponse, WorkerSearchResult, createSearchWorker} from './createSearchWorker';
+import {
+  linkToAssetTableWithAssetOwnerFilter,
+  linkToAssetTableWithGroupFilter,
+  linkToAssetTableWithKindFilter,
+  linkToAssetTableWithTagFilter,
+  linkToCodeLocation,
+} from './links';
 import {AssetFilterSearchResultType, SearchResult, SearchResultType} from './types';
 import {
   SearchPrimaryQuery,
@@ -17,53 +23,17 @@ import {useIndexedDBCachedQuery} from './useIndexedDBCachedQuery';
 import {gql} from '../apollo-client';
 import {AppContext} from '../app/AppContext';
 import {PYTHON_ERROR_FRAGMENT} from '../app/PythonErrorFragment';
-import {displayNameForAssetKey, isHiddenAssetGroupJob} from '../asset-graph/Utils';
+import {
+  displayNameForAssetKey,
+  isHiddenAssetGroupJob,
+  tokenForAssetKey,
+} from '../asset-graph/Utils';
 import {assetDetailsPathForKey} from '../assets/assetDetailsPathForKey';
-import {AssetOwner, DefinitionTag} from '../graphql/types';
+import {AssetTableFragment} from '../assets/types/AssetTableFragment.types';
 import {buildTagString} from '../ui/tagAsString';
 import {assetOwnerAsString} from '../workspace/assetOwnerAsString';
 import {buildRepoPathForHuman} from '../workspace/buildRepoAddress';
-import {repoAddressAsURLString} from '../workspace/repoAddressAsString';
-import {RepoAddress} from '../workspace/types';
 import {workspacePath} from '../workspace/workspacePath';
-
-export const linkToAssetTableWithGroupFilter = (groupMetadata: GroupMetadata) => {
-  return `/assets?${qs.stringify({groups: JSON.stringify([groupMetadata])})}`;
-};
-
-export const linkToAssetTableWithKindFilter = (kind: string) => {
-  return `/assets?${qs.stringify({
-    kinds: JSON.stringify([kind]),
-  })}`;
-};
-
-export const linkToAssetTableWithTagFilter = (tag: Omit<DefinitionTag, '__typename'>) => {
-  return `/assets?${qs.stringify({
-    tags: JSON.stringify([tag]),
-  })}`;
-};
-
-export const linkToAssetTableWithAssetOwnerFilter = (owner: AssetOwner) => {
-  return `/assets?${qs.stringify({
-    owners: JSON.stringify([owner]),
-  })}`;
-};
-
-export const linkToAssetTableWithColumnsFilter = (columns: string[]) => {
-  return `/assets?${qs.stringify({
-    columns: JSON.stringify(columns),
-  })}`;
-};
-
-export const linkToAssetTableWithColumnTagFilter = (tag: Omit<DefinitionTag, '__typename'>) => {
-  return `/assets?${qs.stringify({
-    columnTags: JSON.stringify([tag]),
-  })}`;
-};
-
-export const linkToCodeLocation = (repoAddress: RepoAddress) => {
-  return `/locations/${repoAddressAsURLString(repoAddress)}/assets`;
-};
 
 const primaryDataToSearchResults = (input: {data?: SearchPrimaryQuery}) => {
   const {data} = input;
@@ -195,30 +165,39 @@ const primaryDataToSearchResults = (input: {data?: SearchPrimaryQuery}) => {
 };
 
 const secondaryDataToSearchResults = (
-  input: {data?: SearchSecondaryQuery},
+  input: {data?: SearchSecondaryQuery; includedAssetsByKey?: {[key: string]: AssetTableFragment}},
   searchContext: 'global' | 'catalog',
 ) => {
-  const {data} = input;
+  const {data, includedAssetsByKey} = input;
   if (!data?.assetsOrError || data.assetsOrError.__typename === 'PythonError') {
     return [];
   }
 
-  const {nodes} = data.assetsOrError;
+  const {nodes: _nodes} = data.assetsOrError;
 
-  const assets: SearchResult[] = nodes
-    .filter(({definition}) => definition !== null)
-    .map((node) => ({
-      label: displayNameForAssetKey(node.key),
-      description: `Asset in ${buildRepoPathForHuman(
-        node.definition!.repository.name,
-        node.definition!.repository.location.name,
-      )}`,
-      node,
-      href: assetDetailsPathForKey(node.key),
-      type: SearchResultType.Asset,
-      tags: node.definition!.tags,
-      kinds: node.definition!.kinds,
-    }));
+  const nodes = _nodes.filter(({definition, key}) => {
+    if (definition === null) {
+      return false;
+    }
+    if (includedAssetsByKey && !includedAssetsByKey[tokenForAssetKey(key)]) {
+      return false;
+    }
+    return true;
+  });
+
+  const assets: SearchResult[] = nodes.map((node) => ({
+    key: node.key,
+    label: displayNameForAssetKey(node.key),
+    description: `Asset in ${buildRepoPathForHuman(
+      node.definition!.repository.name,
+      node.definition!.repository.location.name,
+    )}`,
+    node,
+    href: assetDetailsPathForKey(node.key),
+    type: SearchResultType.Asset,
+    tags: node.definition!.tags,
+    kinds: node.definition!.kinds,
+  }));
 
   if (searchContext === 'global') {
     return [...assets];
@@ -293,6 +272,7 @@ const fuseOptions = {
   threshold: 0.3,
   useExtendedSearch: true,
   includeMatches: true,
+  includeScore: true,
 
   // Allow searching to continue to the end of the string.
   ignoreLocation: true,
@@ -320,7 +300,17 @@ type IndexBuffer = {
  *
  * A `terminate` function is provided, but it's probably not necessary to use it.
  */
-export const useGlobalSearch = ({searchContext}: {searchContext: 'global' | 'catalog'}) => {
+export const useGlobalSearch = ({
+  searchContext,
+
+  // includedAssetsByKey - is a pre-filtered list of assets keys that search can show.
+  // This is to take into account any asset selection filtering on the page.
+  // This is only used in the dagster plus catalog.
+  includedAssetsByKey,
+}: {
+  searchContext: 'global' | 'catalog';
+  includedAssetsByKey?: {[key: string]: AssetTableFragment};
+}) => {
   const primarySearch = useRef<WorkerSearchResult | null>(null);
   const secondarySearch = useRef<WorkerSearchResult | null>(null);
 
@@ -383,14 +373,24 @@ export const useGlobalSearch = ({searchContext}: {searchContext: 'global' | 'cat
     if (!secondaryData) {
       return;
     }
-    const results = secondaryDataToSearchResults({data: secondaryData}, searchContext);
+
+    const results = secondaryDataToSearchResults(
+      {data: secondaryData, includedAssetsByKey},
+      searchContext,
+    );
     const augmentedResults = augmentSearchResults(results, searchContext);
     if (!secondarySearch.current) {
       secondarySearch.current = createSearchWorker('secondary', fuseOptions);
     }
     secondarySearch.current.update(augmentedResults);
     consumeBufferEffect(secondarySearchBuffer, secondarySearch.current);
-  }, [consumeBufferEffect, secondaryData, searchContext, augmentSearchResults]);
+  }, [
+    consumeBufferEffect,
+    secondaryData,
+    searchContext,
+    augmentSearchResults,
+    includedAssetsByKey,
+  ]);
 
   const primarySearchBuffer = useRef<IndexBuffer | null>(null);
   const secondarySearchBuffer = useRef<IndexBuffer | null>(null);

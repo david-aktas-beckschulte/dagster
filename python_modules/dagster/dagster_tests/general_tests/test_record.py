@@ -1,24 +1,14 @@
 import os
 import pickle
 from abc import ABC, abstractmethod
+from collections.abc import Mapping, Sequence
 from functools import cached_property
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Generic,
-    List,
-    NamedTuple,
-    Optional,
-    Sequence,
-    TypeVar,
-    Union,
-)
+from typing import TYPE_CHECKING, Annotated, Any, Generic, NamedTuple, Optional, TypeVar, Union
 
 import pytest
+from dagster._check.builder import INJECTED_DEFAULT_VALS_LOCAL_VAR
 from dagster._check.functions import CheckError
 from dagster._record import (
-    _INJECTED_DEFAULT_VALS_LOCAL_VAR,
     IHaveNew,
     ImportFrom,
     LegacyNamedTupleMixin,
@@ -32,7 +22,7 @@ from dagster._record import (
 from dagster._serdes.serdes import deserialize_value, serialize_value, whitelist_for_serdes
 from dagster._utils import hash_collection
 from dagster._utils.cached_method import cached_method
-from typing_extensions import Annotated
+from pydantic import BaseModel, TypeAdapter
 
 if TYPE_CHECKING:
     from dagster._core.test_utils import TestType
@@ -131,10 +121,10 @@ def test_non_record_param():
     assert MyModel2(some_class=SomeClass())
 
     with pytest.raises(check.CheckError):
-        MyModel2(some_class=OtherClass())  # wrong class
+        MyModel2(some_class=OtherClass())  # wrong class  # pyright: ignore[reportArgumentType]
 
     with pytest.raises(check.CheckError):
-        MyModel2(some_class=SomeClass)  # forgot ()
+        MyModel2(some_class=SomeClass)  # forgot ()  # pyright: ignore[reportArgumentType]
 
 
 def test_cached_method() -> None:
@@ -194,8 +184,8 @@ def test_forward_ref_with_new() -> None:
         def __new__(cls, partner=None, child=None):
             return super().__new__(
                 cls,
-                partner=partner,
-                child=child,
+                partner=partner,  # pyright: ignore[reportCallIssue]
+                child=child,  # pyright: ignore[reportCallIssue]
             )
 
     class Child: ...
@@ -285,8 +275,8 @@ def test_optional_arg() -> None:
 def test_dont_share_containers() -> None:
     @record
     class Empties:
-        items: List[str] = []
-        map: Dict[str, str] = {}
+        items: list[str] = []
+        map: dict[str, str] = {}
 
     e_1 = Empties()
     e_2 = Empties()
@@ -316,7 +306,7 @@ def test_sentinel():
     "fields, defaults, expected",
     [
         (
-            {"name": str},
+            ["name"],
             {},
             (
                 ", *, name",
@@ -326,7 +316,7 @@ def test_sentinel():
         # defaults dont need to be in certain order since we force kwargs
         # None handled directly by arg default
         (
-            {"name": str, "age": int, "f": float},
+            ["name", "age", "f"],
             {"age": None},
             (
                 ", *, name, age = None, f",
@@ -335,7 +325,7 @@ def test_sentinel():
         ),
         # empty container defaults get fresh copies via assignments
         (
-            {"things": list},
+            ["things"],
             {"things": []},
             (
                 ", *, things = None",
@@ -343,7 +333,7 @@ def test_sentinel():
             ),
         ),
         (
-            {"map": dict},
+            ["map"],
             {"map": {}},
             (
                 ", *, map = None",
@@ -352,10 +342,10 @@ def test_sentinel():
         ),
         # base case - default values resolved by reference to injected local
         (
-            {"val": Any},
+            ["val"],
             {"val": object()},
             (
-                f", *, val = {_INJECTED_DEFAULT_VALS_LOCAL_VAR}['val']",
+                f", *, val = {INJECTED_DEFAULT_VALS_LOCAL_VAR}['val']",
                 "",
             ),
         ),
@@ -364,7 +354,14 @@ def test_sentinel():
 def test_build_args_and_assign(fields, defaults, expected):
     # tests / documents shared utility fn
     # don't hesitate to delete this upon refactor
-    assert build_args_and_assignment_strs(fields, defaults) == expected
+    assert (
+        build_args_and_assignment_strs(
+            fields,
+            defaults,
+            kw_only=True,
+        )
+        == expected
+    )
 
 
 @record
@@ -376,7 +373,7 @@ class Person:
 @record_custom
 class Agent(IHaveNew):
     name: str
-    secrets: List[str]
+    secrets: list[str]
 
     def __new__(cls, name: str, **kwargs):
         return super().__new__(
@@ -455,21 +452,21 @@ def test_base_class_conflicts() -> None:
 def test_lazy_import():
     @record
     class BadModel:
-        foos: List["TestType"]
+        foos: list["TestType"]
 
     with pytest.raises(check.CheckError, match="Unable to resolve"):
         BadModel(foos=[])
 
     @record
     class AnnotatedModel:
-        foos: List[Annotated["TestType", ImportFrom("dagster._core.test_utils")]]
+        foos: list[Annotated["TestType", ImportFrom("dagster._core.test_utils")]]
 
     assert AnnotatedModel(foos=[])
 
     with pytest.raises(
         check.CheckError, match="Expected <class 'dagster._core.test_utils.TestType'>"
     ):
-        AnnotatedModel(foos=[1, 2, 3])
+        AnnotatedModel(foos=[1, 2, 3])  # pyright: ignore[reportArgumentType]
 
     def _out_of_scope():
         from dagster._core.test_utils import TestType
@@ -533,7 +530,7 @@ def test_make_hashable():
         stuff: Sequence[Any]
 
         def __hash__(self):
-            return hash_collection(self)
+            return hash_collection(self)  # pyright: ignore[reportArgumentType]
 
     y = Yep(stuff=[1, 2, 3])
     assert hash(y)
@@ -830,3 +827,96 @@ def test_replace() -> None:
 def test_defensive_checks_running():
     # make sure we have enabled defensive checks in test, ideally as broadly as possible
     assert os.getenv("DAGSTER_RECORD_DEFENSIVE_CHECKS") == "true"
+
+
+def test_allow_posargs():
+    @record(kw_only=False)
+    class Foo:
+        a: int
+
+    assert Foo(2)
+
+    @record(kw_only=False)
+    class Bar:
+        a: int
+        b: int
+        c: int = 4
+
+    assert Bar(1, 2)
+
+    with pytest.raises(CheckError):
+
+        @record(kw_only=False)
+        class Baz:
+            a: int = 4
+            b: int  # type: ignore # good job type checker
+
+
+def test_posargs_inherit():
+    @record(kw_only=False)
+    class Parent:
+        name: str
+
+    @record(kw_only=False)
+    class Child(Parent):
+        parent: Parent
+
+    p = Parent("Alex")
+    assert p
+    c = Child("Lyra", p)
+    assert c
+
+    # test kw_only not being aligned
+    with pytest.raises(CheckError):
+
+        @record
+        class Bad(Parent):
+            other: str
+
+    with pytest.raises(CheckError):
+
+        @record
+        class A:
+            a: int
+
+        @record(kw_only=False)
+        class B(A):
+            b: int
+
+
+def test_pydantic() -> None:
+    @record
+    class Simple:
+        a: str
+        b: str
+
+    class SimpleHolder(BaseModel):
+        simple: Simple
+
+    holder = SimpleHolder(simple=Simple(a="a", b="b"))
+    assert TypeAdapter(SimpleHolder).validate_python(holder)
+
+    @record_custom
+    class Custom(IHaveNew):
+        ab: str
+        c: str
+
+        def __new__(cls, a: str, b: str, c: int):
+            return super().__new__(cls, ab=a + b, c=str(c))
+
+    class CustomHolder(BaseModel):
+        custom: Custom
+        custom_list: Sequence[Custom]
+        custom_mapping: Mapping[str, Custom]
+        custom_list_mapping: Mapping[str, Sequence[Custom]]
+        optional_custom_list_mapping: Optional[Mapping[str, Sequence[Custom]]]
+
+    c = Custom("a", "b", 1)
+    holder = CustomHolder(
+        custom=c,
+        custom_list=[c],
+        custom_mapping={"c": c},
+        custom_list_mapping={"c": [c]},
+        optional_custom_list_mapping={"c": [c]},
+    )
+    assert TypeAdapter(CustomHolder).validate_python(holder)

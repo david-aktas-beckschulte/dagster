@@ -1,5 +1,6 @@
 import memoize from 'lodash/memoize';
 import {useEffect, useLayoutEffect, useMemo, useReducer, useRef} from 'react';
+import {Worker} from 'shared/workers/Worker.oss';
 
 import {ILayoutOp, LayoutOpGraphOptions, OpGraphLayout, layoutOpGraph} from './layout';
 import {useFeatureFlags} from '../app/Flags';
@@ -27,15 +28,13 @@ export const getFullOpLayout = memoize(layoutOpGraph, _opLayoutCacheKey);
 const asyncGetFullOpLayout = asyncMemoize((ops: ILayoutOp[], opts: LayoutOpGraphOptions) => {
   return new Promise<OpGraphLayout>((resolve) => {
     const worker = new Worker(new URL('../workers/dagre_layout.worker', import.meta.url));
-    worker.addEventListener('message', (event) => {
+    worker.onMessage((event) => {
       resolve(event.data);
       worker.terminate();
     });
     worker.postMessage({type: 'layoutOpGraph', ops, opts});
   });
 }, _opLayoutCacheKey);
-
-// Asset Graph
 
 const _assetLayoutCacheKey = (graphData: GraphData, opts: LayoutAssetGraphOptions) => {
   // Note: The "show secondary edges" toggle means that we need a cache key that incorporates
@@ -63,7 +62,7 @@ const _assetLayoutCacheKey = (graphData: GraphData, opts: LayoutAssetGraphOption
   }
 
   return `${JSON.stringify(opts)}${JSON.stringify({
-    version: 2,
+    version: 4,
     downstream: recreateObjectWithKeysSorted(graphData.downstream),
     upstream: recreateObjectWithKeysSorted(graphData.upstream),
     nodes: Object.keys(graphData.nodes)
@@ -79,7 +78,7 @@ export const asyncGetFullAssetLayoutIndexDB = indexedDBAsyncMemoize(
   (graphData: GraphData, opts: LayoutAssetGraphOptions) => {
     return new Promise<AssetGraphLayout>((resolve) => {
       const worker = new Worker(new URL('../workers/dagre_layout.worker', import.meta.url));
-      worker.addEventListener('message', (event) => {
+      worker.onMessage((event) => {
         resolve(event.data);
         worker.terminate();
       });
@@ -93,7 +92,7 @@ const asyncGetFullAssetLayout = asyncMemoize(
   (graphData: GraphData, opts: LayoutAssetGraphOptions) => {
     return new Promise<AssetGraphLayout>((resolve) => {
       const worker = new Worker(new URL('../workers/dagre_layout.worker', import.meta.url));
-      worker.addEventListener('message', (event) => {
+      worker.onMessage((event) => {
         resolve(event.data);
         worker.terminate();
       });
@@ -126,7 +125,7 @@ type Action =
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case 'loading':
-      return {loading: true, layout: null, cacheKey: ''};
+      return {loading: true, layout: state.layout, cacheKey: state.cacheKey};
     case 'layout':
       return {
         loading: false,
@@ -196,17 +195,21 @@ export function useAssetLayout(
   _graphData: GraphData,
   expandedGroups: string[],
   opts: LayoutAssetGraphOptions,
+  dataLoading?: boolean,
 ) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const flags = useFeatureFlags();
 
   const graphData = useMemo(() => ({..._graphData, expandedGroups}), [expandedGroups, _graphData]);
 
-  const cacheKey = _assetLayoutCacheKey(graphData, opts);
+  const cacheKey = useMemo(() => _assetLayoutCacheKey(graphData, opts), [graphData, opts]);
   const nodeCount = Object.keys(graphData.nodes).length;
   const runAsync = nodeCount >= ASYNC_LAYOUT_SOLID_COUNT;
 
   useLayoutEffect(() => {
+    if (dataLoading) {
+      return;
+    }
     let canceled = false;
     async function runAsyncLayout() {
       dispatch({type: 'loading'});
@@ -232,7 +235,7 @@ export function useAssetLayout(
     return () => {
       canceled = true;
     };
-  }, [cacheKey, graphData, runAsync, flags, opts]);
+  }, [cacheKey, graphData, runAsync, flags, opts, dataLoading]);
 
   const uid = useRef(0);
   useDangerousRenderEffect(() => {

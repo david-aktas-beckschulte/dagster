@@ -9,7 +9,7 @@ import {
   SearchScheduleFragment,
   SearchSensorFragment,
 } from './types/useGlobalSearch.types';
-import {DefinitionTag} from '../graphql/types';
+import {AssetKey, DefinitionTag} from '../graphql/types';
 
 export enum SearchResultType {
   AssetGroup,
@@ -28,14 +28,14 @@ export enum SearchResultType {
 export enum AssetFilterSearchResultType {
   // Add types with corresponding strings to distinguish
   // between SearchResultType.AssetGroup
-  Kind = 'AssetFilterSearchResultType.Kind',
-  Tag = 'AssetFilterSearchResultType.Tag',
-  CodeLocation = 'AssetFilterSearchResultType.CodeLocation',
-  Owner = 'AssetFilterSearchResultType.Owner',
-  AssetGroup = 'AssetFilterSearchResultType.AssetGroup',
-  Column = 'AssetFilterSearchResultType.Column',
-  ColumnTag = 'AssetFilterSearchResultType.ColumnTag',
-  TableName = 'AssetFilterSearchResultType.TableName',
+  Kind = 'kind:',
+  Tag = 'tag:',
+  CodeLocation = 'code_location:',
+  Owner = 'owner:',
+  AssetGroup = 'asset_group:',
+  Column = 'column:',
+  ColumnTag = 'column_tag:',
+  TableName = 'table_name:',
 }
 
 export function isAssetFilterSearchResultType(
@@ -54,6 +54,7 @@ export function isAssetFilterSearchResultType(
 }
 
 export type SearchResult = {
+  key?: AssetKey;
   label: string;
   description: string;
   href: string;

@@ -3,9 +3,9 @@ import os
 
 import pytest
 
-from dagster import file_relative_path
+import dagster as dg
 
-snippets_folder = file_relative_path(__file__, "../docs_beta_snippets/integrations")
+snippets_folder = dg.file_relative_path(__file__, "../docs_beta_snippets/integrations")
 
 EXCLUDED_FILES = {
     # exclude community integrations because they require non-editable dagster depdendencies
@@ -19,9 +19,29 @@ EXCLUDED_FILES = {
     f"{snippets_folder}/sdf.py",
     f"{snippets_folder}/airbyte.py",
     f"{snippets_folder}/dlt.py",
-    f"{snippets_folder}/fivetran.py",
+    f"{snippets_folder}/fivetran/customize_fivetran_asset_defs.py",
+    f"{snippets_folder}/fivetran/customize_fivetran_translator_asset_spec.py",
+    f"{snippets_folder}/fivetran/multiple_fivetran_workspaces.py",
+    f"{snippets_folder}/fivetran/representing_fivetran_assets.py",
+    f"{snippets_folder}/fivetran/select_fivetran_connectors.py",
+    f"{snippets_folder}/fivetran/sync_and_materialize_fivetran_assets.py",
+    f"{snippets_folder}/fivetran/fetch_column_metadata_fivetran_assets.py",
+    f"{snippets_folder}/airbyte_cloud/customize_airbyte_cloud_asset_defs.py",
+    f"{snippets_folder}/airbyte_cloud/customize_airbyte_cloud_translator_asset_spec.py",
+    f"{snippets_folder}/airbyte_cloud/multiple_airbyte_cloud_workspaces.py",
+    f"{snippets_folder}/airbyte_cloud/representing_airbyte_cloud_assets.py",
+    f"{snippets_folder}/airbyte_cloud/sync_and_materialize_airbyte_cloud_assets.py",
     # FIXME: this breaks on py3.8 and seems related to the non-dagster dependencies
     f"{snippets_folder}/pandera.py",
+    # FIXME: include tests
+    f"{snippets_folder}/anthropic.py",
+    f"{snippets_folder}/chroma.py",
+    f"{snippets_folder}/gemini.py",
+    f"{snippets_folder}/weaviate.py",
+    f"{snippets_folder}/looker/asset_graph.py",
+    f"{snippets_folder}/looker/asset_graph_filtered.py",
+    f"{snippets_folder}/looker/asset_metadata.py",
+    f"{snippets_folder}/looker/pdts.py",
 }
 
 

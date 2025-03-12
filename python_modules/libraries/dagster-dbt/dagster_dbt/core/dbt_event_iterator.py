@@ -1,6 +1,6 @@
-from collections import abc
+from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor
-from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterator, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Optional, Union, cast
 
 from dagster import (
     AssetCheckResult,
@@ -10,7 +10,7 @@ from dagster import (
     _check as check,
     get_dagster_logger,
 )
-from dagster._annotations import experimental, public
+from dagster._annotations import public
 from dagster._core.definitions.metadata import TableMetadataSet, TextMetadataValue
 from dagster._core.errors import DagsterInvalidPropertyError
 from dagster._core.utils import exhaust_iterator_and_yield_results_with_exception, imap
@@ -35,14 +35,14 @@ T = TypeVar("T", bound=DbtDagsterEventType)
 
 def _get_dbt_resource_props_from_event(
     invocation: "DbtCliInvocation", event: DbtDagsterEventType
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     unique_id = cast(TextMetadataValue, event.metadata["unique_id"]).text
     return check.not_none(invocation.manifest["nodes"].get(unique_id))
 
 
 def _fetch_column_metadata(
     invocation: "DbtCliInvocation", event: DbtDagsterEventType, with_column_lineage: bool
-) -> Optional[Dict[str, Any]]:
+) -> Optional[dict[str, Any]]:
     """Threaded task which fetches column schema and lineage metadata for dbt models in a dbt
     run once they are built, returning the metadata to be attached.
 
@@ -138,7 +138,7 @@ def _fetch_column_metadata(
 def _fetch_row_count_metadata(
     invocation: "DbtCliInvocation",
     event: DbtDagsterEventType,
-) -> Optional[Dict[str, Any]]:
+) -> Optional[dict[str, Any]]:
     """Threaded task which fetches row counts for materialized dbt models in a dbt run
     once they are built, and attaches the row count as metadata to the event.
     """
@@ -186,7 +186,7 @@ def _fetch_row_count_metadata(
         return None
 
 
-class DbtEventIterator(Generic[T], abc.Iterator):
+class DbtEventIterator(Iterator[T]):
     """A wrapper around an iterator of dbt events which contains additional methods for
     post-processing the events, such as fetching row counts for materialized tables.
     """
@@ -206,13 +206,12 @@ class DbtEventIterator(Generic[T], abc.Iterator):
         return self
 
     @public
-    @experimental
     def fetch_row_counts(
         self,
     ) -> (
         "DbtEventIterator[Union[Output, AssetMaterialization, AssetObservation, AssetCheckResult]]"
     ):
-        """Experimental functionality which will fetch row counts for materialized dbt
+        """Functionality which will fetch row counts for materialized dbt
         models in a dbt run once they are built. Note that row counts will not be fetched
         for views, since this requires running the view's SQL query which may be costly.
 
@@ -224,14 +223,13 @@ class DbtEventIterator(Generic[T], abc.Iterator):
         return self._attach_metadata(_fetch_row_count_metadata)
 
     @public
-    @experimental
     def fetch_column_metadata(
         self,
         with_column_lineage: bool = True,
     ) -> (
         "DbtEventIterator[Union[Output, AssetMaterialization, AssetObservation, AssetCheckResult]]"
     ):
-        """Experimental functionality which will fetch column schema metadata for dbt models in a run
+        """Functionality which will fetch column schema metadata for dbt models in a run
         once they're built. It will also fetch schema information for upstream models and generate
         column lineage metadata using sqlglot, if enabled.
 
@@ -250,7 +248,7 @@ class DbtEventIterator(Generic[T], abc.Iterator):
 
     def _attach_metadata(
         self,
-        fn: Callable[["DbtCliInvocation", DbtDagsterEventType], Optional[Dict[str, Any]]],
+        fn: Callable[["DbtCliInvocation", DbtDagsterEventType], Optional[dict[str, Any]]],
     ) -> "DbtEventIterator[DbtDagsterEventType]":
         """Runs a threaded task to attach metadata to each event in the iterator.
 
@@ -305,7 +303,6 @@ class DbtEventIterator(Generic[T], abc.Iterator):
         )
 
     @public
-    @experimental
     def with_insights(
         self,
         skip_config_check: bool = False,

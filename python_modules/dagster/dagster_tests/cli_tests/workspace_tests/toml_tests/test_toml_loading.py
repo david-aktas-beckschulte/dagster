@@ -1,3 +1,6 @@
+import textwrap
+from tempfile import NamedTemporaryFile
+
 from dagster._core.workspace.load_target import get_origins_from_toml, is_valid_modules_list
 from dagster._utils import file_relative_path
 from pytest import raises
@@ -8,6 +11,30 @@ def test_load_python_module_from_toml():
     assert len(origins) == 1
     assert origins[0].loadable_target_origin.module_name == "baaz"
     assert origins[0].location_name == "baaz"
+
+    origins = get_origins_from_toml(
+        file_relative_path(__file__, "single_module_with_code_location_name.toml")
+    )
+    assert len(origins) == 1
+    assert origins[0].loadable_target_origin.module_name == "baaz"
+    assert origins[0].location_name == "bar"
+
+
+def test_load_python_module_from_dg_toml():
+    with NamedTemporaryFile("w") as f:
+        f.write(
+            textwrap.dedent("""
+                [tool.dg.project]
+                root_module = "baaz"
+                code_location_name = "foo"
+                module_name = "baaz.definitions"
+            """).strip()
+        )
+        f.flush()
+        origins = get_origins_from_toml(f.name)
+        assert len(origins) == 1
+        assert origins[0].loadable_target_origin.module_name == "baaz.definitions"
+        assert origins[0].location_name == "foo"
 
     origins = get_origins_from_toml(
         file_relative_path(__file__, "single_module_with_code_location_name.toml")
@@ -58,13 +85,13 @@ def test_is_valid_modules_list_from_toml():
 
 def test_is_valid_modules_list_not_a_list():
     with raises(ValueError, match="Modules should be a list."):
-        is_valid_modules_list("not a list")
+        is_valid_modules_list("not a list")  # pyright: ignore[reportArgumentType]
 
 
 def test_is_valid_modules_list_item_not_dict():
     modules = ["not a dictionary"]
     with raises(ValueError, match="Item at index 0 is not a dictionary."):
-        is_valid_modules_list(modules)
+        is_valid_modules_list(modules)  # pyright: ignore[reportArgumentType]
 
 
 def test_is_valid_modules_list_missing_type():

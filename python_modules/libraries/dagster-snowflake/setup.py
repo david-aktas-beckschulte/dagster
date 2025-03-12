@@ -1,11 +1,10 @@
 from pathlib import Path
-from typing import Dict
 
 from setuptools import find_packages, setup
 
 
 def get_version() -> str:
-    version: Dict[str, str] = {}
+    version: dict[str, str] = {}
     with open(Path(__file__).parent / "dagster_snowflake/version.py", encoding="utf8") as fp:
         exec(fp.read(), version)
 
@@ -37,6 +36,9 @@ setup(
     install_requires=[
         f"dagster{pin}",
         "snowflake-connector-python>=3.4.0",
+        # Workaround for incorrect pin in the snowflake-connector-python package
+        # See https://github.com/snowflakedb/snowflake-connector-python/issues/2109
+        "pyOpenSSL>=22.1.0",
     ],
     extras_require={
         "snowflake.sqlalchemy": [

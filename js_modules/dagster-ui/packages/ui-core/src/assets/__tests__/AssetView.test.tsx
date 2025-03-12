@@ -31,6 +31,8 @@ import {
   RootWorkspaceWithOneLocation,
 } from '../__fixtures__/AssetViewDefinition.fixtures';
 
+import '../../../jest/mocks/ComputeGraphData.worker';
+
 // This file must be mocked because Jest can't handle `import.meta.url`.
 jest.mock('../../graph/asyncGraphLayout', () => ({}));
 
@@ -91,8 +93,10 @@ describe('AssetView', () => {
 
   describe('Launch button', () => {
     it('shows the "Materialize" button for a software-defined asset', async () => {
-      render(<Test path="/sda_asset" assetKey={{path: ['sda_asset']}} />);
-      expect(await screen.findByText('Materialize')).toBeVisible();
+      await act(() => render(<Test path="/sda_asset" assetKey={{path: ['sda_asset']}} />));
+      await waitFor(async () => {
+        expect(await screen.findByText('Materialize')).toBeVisible();
+      });
     });
 
     it('shows the "Observe" button for a software-defined source asset', async () => {

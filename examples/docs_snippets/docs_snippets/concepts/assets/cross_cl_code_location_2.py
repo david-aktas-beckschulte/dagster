@@ -2,12 +2,12 @@
 # code_location_2.py
 import json
 
-from dagster import AssetKey, Definitions, asset
+from dagster import Definitions, asset
 
 
 @asset(deps=["code_location_1_asset"])
 def code_location_2_asset():
-    with open("/data/code_location_1_asset.json", "r") as f:
+    with open("/data/code_location_1_asset.json") as f:
         x = json.load(f)
 
     with open("/data/code_location_2_asset.json", "w+") as f:

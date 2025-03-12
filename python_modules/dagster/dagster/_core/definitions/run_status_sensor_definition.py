@@ -1,27 +1,15 @@
 import functools
 import logging
 import os
+from collections.abc import Iterator, Mapping, Sequence
 from contextlib import ExitStack
 from datetime import datetime
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Iterator,
-    Mapping,
-    NamedTuple,
-    Optional,
-    Sequence,
-    Set,
-    Union,
-    cast,
-    overload,
-)
+from typing import TYPE_CHECKING, Any, Callable, NamedTuple, Optional, Union, cast, overload
 
 from typing_extensions import TypeAlias
 
 import dagster._check as check
-from dagster._annotations import deprecated_param, experimental_param, public
+from dagster._annotations import beta_param, deprecated_param, public
 from dagster._core.definitions.graph_definition import GraphDefinition
 from dagster._core.definitions.instigation_logger import InstigationLogger
 from dagster._core.definitions.job_definition import JobDefinition
@@ -31,11 +19,11 @@ from dagster._core.definitions.scoped_resources_builder import Resources, Scoped
 from dagster._core.definitions.sensor_definition import (
     DagsterRunReaction,
     DefaultSensorStatus,
-    RawSensorEvaluationFunctionReturn,
     RunRequest,
     SensorDefinition,
     SensorEvaluationContext,
     SensorResult,
+    SensorReturnTypesUnion,
     SensorType,
     SkipReason,
     get_context_param_name,
@@ -71,12 +59,12 @@ if TYPE_CHECKING:
     )
 
 RunStatusSensorEvaluationFunction: TypeAlias = Union[
-    Callable[..., RawSensorEvaluationFunctionReturn],
-    Callable[..., RawSensorEvaluationFunctionReturn],
+    Callable[..., SensorReturnTypesUnion],
+    Callable[..., SensorReturnTypesUnion],
 ]
 RunFailureSensorEvaluationFn: TypeAlias = Union[
-    Callable[..., RawSensorEvaluationFunctionReturn],
-    Callable[..., RawSensorEvaluationFunctionReturn],
+    Callable[..., SensorReturnTypesUnion],
+    Callable[..., SensorReturnTypesUnion],
 ]
 
 
@@ -111,7 +99,7 @@ class RunStatusSensorCursor(
     )
 ):
     def __new__(cls, record_id, update_timestamp=None, record_timestamp=None):
-        return super(RunStatusSensorCursor, cls).__new__(
+        return super().__new__(
             cls,
             record_id=check.int_param(record_id, "record_id"),
             update_timestamp=check.opt_str_param(update_timestamp, "update_timestamp"),
@@ -225,7 +213,7 @@ class RunStatusSensorContext:
                 raise DagsterInvariantViolationError(
                     "At least one provided resource is a generator, but attempting to access"
                     " resources outside of context manager scope. You can use the following syntax"
-                    " to open a context manager: `with build_schedule_context(...) as context:`"
+                    " to open a context manager: `with build_sensor_context(...) as context:`"
                 )
 
         return self._resources
@@ -309,7 +297,7 @@ class RunStatusSensorContext:
 class RunFailureSensorContext(RunStatusSensorContext):
     """The ``context`` object available to a decorated function of ``run_failure_sensor``.
 
-    Attributes:
+    Args:
         sensor_name (str): the name of the sensor.
         dagster_run (DagsterRun): the failed run.
     """
@@ -343,7 +331,7 @@ class RunFailureSensorContext(RunStatusSensorContext):
         return [cast(DagsterEvent, record.event_log_entry.dagster_event) for record in records]
 
 
-@experimental_param(param="repository_def")
+@beta_param(param="repository_def")
 def build_run_status_sensor_context(
     sensor_name: str,
     dagster_event: DagsterEvent,
@@ -527,7 +515,7 @@ def run_failure_sensor(
             status can be overridden from the Dagster UI or via the GraphQL API.
         request_job (Optional[Union[GraphDefinition, JobDefinition, UnresolvedAssetJob]]): The job a RunRequest should
             execute if yielded from the sensor.
-        request_jobs (Optional[Sequence[Union[GraphDefinition, JobDefinition, UnresolvedAssetJob]]]): (experimental)
+        request_jobs (Optional[Sequence[Union[GraphDefinition, JobDefinition, UnresolvedAssetJob]]]):
             A list of jobs to be executed if RunRequests are yielded from the sensor.
         monitor_all_repositories (bool): (deprecated in favor of monitor_all_code_locations) If set to True,
             the sensor will monitor all runs in the Dagster instance. If set to True, an error will be raised if you also specify
@@ -616,7 +604,7 @@ class RunStatusSensorDefinition(SensorDefinition):
             be used for searching and filtering in the UI.
         metadata (Optional[Mapping[str, object]]): A set of metadata entries that annotate the
             sensor. Values will be normalized to typed `MetadataValue` objects.
-        request_jobs (Optional[Sequence[Union[GraphDefinition, JobDefinition]]]): (experimental)
+        request_jobs (Optional[Sequence[Union[GraphDefinition, JobDefinition]]]):
             A list of jobs to be executed if RunRequests are yielded from the sensor.
     """
 
@@ -645,7 +633,7 @@ class RunStatusSensorDefinition(SensorDefinition):
         request_jobs: Optional[Sequence[ExecutableDefinition]] = None,
         tags: Optional[Mapping[str, str]] = None,
         metadata: Optional[Mapping[str, object]] = None,
-        required_resource_keys: Optional[Set[str]] = None,
+        required_resource_keys: Optional[set[str]] = None,
     ):
         from dagster._core.definitions.selector import (
             CodeLocationSelector,
@@ -675,7 +663,7 @@ class RunStatusSensorDefinition(SensorDefinition):
             monitor_all_code_locations, "monitor_all_code_locations", default=False
         )
 
-        resource_arg_names: Set[str] = {arg.name for arg in get_resource_args(run_status_sensor_fn)}
+        resource_arg_names: set[str] = {arg.name for arg in get_resource_args(run_status_sensor_fn)}
 
         combined_required_resource_keys = (
             check.opt_set_param(required_resource_keys, "required_resource_keys", of_type=str)
@@ -762,6 +750,42 @@ class RunStatusSensorDefinition(SensorDefinition):
                         after_timestamp=cast(
                             datetime, parse_time_string(sensor_cursor.update_timestamp)
                         ).timestamp(),
+                    ),
+                    ascending=True,
+                    limit=fetch_limit,
+                ).records
+            elif (
+                context.instance.event_log_storage.supports_run_status_change_job_name_filter
+                and monitored_jobs
+                and all(
+                    [
+                        not isinstance(monitored, (RepositorySelector, CodeLocationSelector))
+                        for monitored in monitored_jobs
+                    ]
+                )
+            ):
+                # the event log storage supports run status change selectors... we should construct
+                # the appropriate job selectors so that we can filter the events by jobs in the
+                # storage layer instead of in memory.  This should improve throughput since we will
+                # avoid fetching events that we will filter out later on.
+                job_names = _job_names_for_monitored(
+                    cast(
+                        Sequence[
+                            Union[
+                                JobDefinition,
+                                GraphDefinition,
+                                UnresolvedAssetJobDefinition,
+                                "JobSelector",
+                            ]
+                        ],
+                        monitored_jobs,
+                    )
+                )
+                event_records = context.instance.fetch_run_status_changes(
+                    records_filter=RunStatusChangeRecordsFilter(
+                        event_type=cast(RunStatusChangeEventType, event_type),
+                        after_storage_id=sensor_cursor.record_id,
+                        job_names=job_names,
                     ),
                     ascending=True,
                     limit=fetch_limit,
@@ -895,18 +919,21 @@ class RunStatusSensorDefinition(SensorDefinition):
                 )
 
                 try:
-                    with RunStatusSensorContext(
-                        sensor_name=name,
-                        dagster_run=dagster_run,
-                        dagster_event=event_log_entry.dagster_event,
-                        instance=context.instance,
-                        resource_defs=context.resource_defs,
-                        logger=context.log,
-                        partition_key=dagster_run.tags.get("dagster/partition"),
-                        repository_def=context.repository_def,
-                    ) as sensor_context, user_code_error_boundary(
-                        RunStatusSensorExecutionError,
-                        lambda: f'Error occurred during the execution sensor "{name}".',
+                    with (
+                        RunStatusSensorContext(
+                            sensor_name=name,
+                            dagster_run=dagster_run,
+                            dagster_event=event_log_entry.dagster_event,
+                            instance=context.instance,
+                            resource_defs=context.resource_defs,
+                            logger=context.log,
+                            partition_key=dagster_run.tags.get("dagster/partition"),
+                            repository_def=context.repository_def,
+                        ) as sensor_context,
+                        user_code_error_boundary(
+                            RunStatusSensorExecutionError,
+                            lambda: f'Error occurred during the execution sensor "{name}".',
+                        ),
                     ):
                         context_param_name = get_context_param_name(run_status_sensor_fn)
                         context_param = (
@@ -964,7 +991,7 @@ class RunStatusSensorDefinition(SensorDefinition):
                     error=serializable_error,
                 )
 
-        super(RunStatusSensorDefinition, self).__init__(
+        super().__init__(
             name=name,
             evaluation_fn=_wrapped_fn,
             minimum_interval_seconds=minimum_interval_seconds,
@@ -977,7 +1004,7 @@ class RunStatusSensorDefinition(SensorDefinition):
             metadata=metadata,
         )
 
-    def __call__(self, *args, **kwargs) -> RawSensorEvaluationFunctionReturn:
+    def __call__(self, *args, **kwargs) -> SensorReturnTypesUnion:
         context_param_name = get_context_param_name(self._run_status_sensor_fn)
         context = get_or_create_sensor_context(
             self._run_status_sensor_fn,
@@ -1076,7 +1103,7 @@ def run_status_sensor(
             status can be overridden from the Dagster UI or via the GraphQL API.
         request_job (Optional[Union[GraphDefinition, JobDefinition, UnresolvedAssetJobDefinition]]): The job that should be
             executed if a RunRequest is yielded from the sensor.
-        request_jobs (Optional[Sequence[Union[GraphDefinition, JobDefinition, UnresolvedAssetJobDefinition]]]): (experimental)
+        request_jobs (Optional[Sequence[Union[GraphDefinition, JobDefinition, UnresolvedAssetJobDefinition]]]):
             A list of jobs to be executed if RunRequests are yielded from the sensor.
         monitor_all_repositories (Optional[bool]): (deprecated in favor of monitor_all_code_locations) If set to True, the sensor will monitor all runs in the Dagster instance.
             If set to True, an error will be raised if you also specify monitored_jobs or job_selection.
@@ -1102,7 +1129,7 @@ def run_status_sensor(
         )
 
         if jobs and monitor_all:
-            DagsterInvalidDefinitionError(
+            raise DagsterInvalidDefinitionError(
                 f"Cannot specify both {'monitor_all_code_locations' if monitor_all_code_locations else 'monitor_all_repositories'} and"
                 f" {'monitored_jobs' if monitored_jobs else 'job_selection'}."
             )
@@ -1123,3 +1150,24 @@ def run_status_sensor(
         )
 
     return inner
+
+
+def _job_names_for_monitored(
+    monitored: Sequence[
+        Union[
+            JobDefinition,
+            GraphDefinition,
+            UnresolvedAssetJobDefinition,
+            "JobSelector",
+        ]
+    ],
+) -> Sequence[str]:
+    from dagster._core.definitions.selector import JobSelector
+
+    job_names = []
+    for m in monitored:
+        if isinstance(m, JobSelector):
+            job_names.append(m.job_name)
+        else:
+            job_names.append(m.name)
+    return job_names

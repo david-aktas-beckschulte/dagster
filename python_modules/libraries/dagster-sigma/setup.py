@@ -1,11 +1,10 @@
 from pathlib import Path
-from typing import Dict
 
 from setuptools import find_packages, setup
 
 
 def get_version() -> str:
-    version: Dict[str, str] = {}
+    version: dict[str, str] = {}
     with open(Path(__file__).parent / "dagster_sigma/version.py", encoding="utf8") as fp:
         exec(fp.read(), version)
 
@@ -39,5 +38,10 @@ setup(
     extras_require={"test": ["aioresponses", "aiohttp<3.11"]},
     include_package_data=True,
     python_requires=">=3.9,<3.13",
+    entry_points={
+        "console_scripts": [
+            "dagster-sigma = dagster_sigma.cli:app",
+        ]
+    },
     zip_safe=False,
 )

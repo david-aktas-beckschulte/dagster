@@ -2,7 +2,8 @@ import datetime
 import json
 import os
 import time
-from typing import Dict, List, Optional, Sequence
+from collections.abc import Sequence
+from typing import Optional
 
 import pytest
 from dagster import (
@@ -38,6 +39,7 @@ from dagster_graphql.test.utils import (
     execute_dagster_graphql,
     infer_job_selector,
     infer_repository_selector,
+    main_repo_location_name,
 )
 
 from dagster_graphql_tests.graphql.graphql_context_test_suite import (
@@ -817,6 +819,40 @@ GET_ASSET_DEPENDENCIES_PARTITION_MAPPING = """
     }
 """
 
+GET_MATERIALIZATIONS_FROM_STEP_STATS = """
+query MaterializationsFromStepStatsQuery($runId: ID!) {
+  runOrError(runId: $runId) {
+    ... on PythonError {
+      className
+      message
+      stack
+    }
+    ... on Run {
+      stepStats {
+        materializations {
+          eventType
+          message
+          assetLineage {
+            partitions
+          }
+        }
+      }
+    }
+  }
+}
+"""
+
+GET_ASSET_CONCURRENCY_GROUP = """
+    query AssetNodeQuery($assetKey: AssetKeyInput!) {
+        assetNodeOrError(assetKey: $assetKey) {
+            ...on AssetNode {
+                id
+                pools
+            }
+        }
+    }
+"""
+
 
 def _create_run(
     graphql_context: WorkspaceRequestContext,
@@ -859,8 +895,8 @@ def _create_partitioned_run(
     graphql_context: WorkspaceRequestContext,
     job_name: str,
     partition_key: str,
-    asset_selection: Optional[List[AssetKey]] = None,
-    tags: Optional[Dict[str, str]] = None,
+    asset_selection: Optional[list[AssetKey]] = None,
+    tags: Optional[dict[str, str]] = None,
 ) -> str:
     base_partition_tags: Sequence[GqlTag] = [
         {"key": "dagster/partition", "value": partition_key},
@@ -1241,7 +1277,7 @@ class TestAssetAwareEventLog(ExecutingGraphQLContextTestMatrix):
 
         assert len(result.data["assetNodes"]) == 1
         asset_node = result.data["assetNodes"][0]
-        assert asset_node["id"] == 'test.test_repo.["asset_one"]'
+        assert asset_node["id"] == f'{main_repo_location_name()}.test_repo.["asset_one"]'
         assert asset_node["hasMaterializePermission"]
         assert asset_node["hasReportRunlessAssetEventPermission"]
 
@@ -1256,7 +1292,7 @@ class TestAssetAwareEventLog(ExecutingGraphQLContextTestMatrix):
 
         assert len(result.data["assetNodes"]) == 2
         asset_node = result.data["assetNodes"][0]
-        assert asset_node["id"] == 'test.test_repo.["asset_one"]'
+        assert asset_node["id"] == f'{main_repo_location_name()}.test_repo.["asset_one"]'
 
     def test_asset_node_is_executable(self, graphql_context: WorkspaceRequestContext):
         result = execute_dagster_graphql(
@@ -2015,6 +2051,14 @@ class TestAssetAwareEventLog(ExecutingGraphQLContextTestMatrix):
         assert len(result.data["runsOrError"]["results"][0]["assetMaterializations"]) == 1
         snapshot.assert_match(result.data)
 
+    def test_get_materializations_from_step_stats(self, graphql_context: WorkspaceRequestContext):
+        run_id = _create_run(graphql_context, "single_asset_job")
+        result = execute_dagster_graphql(
+            graphql_context, GET_MATERIALIZATIONS_FROM_STEP_STATS, {"runId": run_id}
+        )
+        assert result.data
+        assert len(result.data["runOrError"]["stepStats"][0]["materializations"]) == 1
+
     def test_asset_selection_in_run(self, graphql_context: WorkspaceRequestContext):
         # Generate materializations for bar asset
         run_id = _create_run(graphql_context, "foo_job", asset_selection=[{"path": ["bar"]}])
@@ -2126,7 +2170,7 @@ class TestAssetAwareEventLog(ExecutingGraphQLContextTestMatrix):
     def test_named_groups(self, graphql_context: WorkspaceRequestContext):
         _create_run(graphql_context, "named_groups_job")
         selector = {
-            "repositoryLocationName": "test",
+            "repositoryLocationName": main_repo_location_name(),
             "repositoryName": "test_repo",
         }
 
@@ -2640,7 +2684,7 @@ class TestAssetAwareEventLog(ExecutingGraphQLContextTestMatrix):
         fresh_diamond_bottom = [
             a
             for a in result.data["assetNodes"]
-            if a["id"] == 'test.test_repo.["fresh_diamond_bottom"]'
+            if a["id"] == f'{main_repo_location_name()}.test_repo.["fresh_diamond_bottom"]'
         ]
         assert len(fresh_diamond_bottom) == 1
         assert fresh_diamond_bottom[0]["autoMaterializePolicy"]["policyType"] == "LAZY"
@@ -2654,7 +2698,8 @@ class TestAssetAwareEventLog(ExecutingGraphQLContextTestMatrix):
         automation_condition_asset = [
             a
             for a in result.data["assetNodes"]
-            if a["id"] == 'test.test_repo.["asset_with_automation_condition"]'
+            if a["id"]
+            == f'{main_repo_location_name()}.test_repo.["asset_with_automation_condition"]'
         ]
         assert len(automation_condition_asset) == 1
         condition = automation_condition_asset[0]["automationCondition"]
@@ -2664,7 +2709,8 @@ class TestAssetAwareEventLog(ExecutingGraphQLContextTestMatrix):
         custom_automation_condition_asset = [
             a
             for a in result.data["assetNodes"]
-            if a["id"] == 'test.test_repo.["asset_with_custom_automation_condition"]'
+            if a["id"]
+            == f'{main_repo_location_name()}.test_repo.["asset_with_custom_automation_condition"]'
         ]
         assert len(custom_automation_condition_asset) == 1
         condition = custom_automation_condition_asset[0]["automationCondition"]
@@ -3084,7 +3130,7 @@ class TestPersistentInstanceAssetInProgress(ExecutingGraphQLContextTestMatrix):
         )
 
         # Create two enqueued runs
-        code_location = graphql_context.get_code_location("test")
+        code_location = graphql_context.get_code_location(main_repo_location_name())
         repository = code_location.get_repository("test_repo")
         job = repository.get_full_job("hanging_job")
 
@@ -3406,7 +3452,7 @@ def get_partitioned_asset_repo():
 
 
 def test_1d_subset_backcompat():
-    with instance_for_test() as instance:
+    with instance_for_test(synchronous_run_coordinator=True) as instance:
         instance.can_read_asset_status_cache = lambda: False
         assert instance.can_read_asset_status_cache() is False
 
@@ -3489,7 +3535,7 @@ def test_1d_subset_backcompat():
 
 
 def test_2d_subset_backcompat():
-    with instance_for_test() as instance:
+    with instance_for_test(synchronous_run_coordinator=True) as instance:
         instance.can_read_asset_status_cache = lambda: False
         assert instance.can_read_asset_status_cache() is False
 
@@ -3538,3 +3584,17 @@ def test_2d_subset_backcompat():
             assert len(ranges[1]["secondaryDim"]["materializedPartitions"]) == 2
             assert set(ranges[1]["secondaryDim"]["materializedPartitions"]) == {"a", "c"}
             assert set(ranges[1]["secondaryDim"]["unmaterializedPartitions"]) == {"b", "d"}
+
+
+def test_concurrency_assets(graphql_context: WorkspaceRequestContext):
+    def _graphql_pool(asset_key):
+        result = execute_dagster_graphql(
+            graphql_context,
+            GET_ASSET_CONCURRENCY_GROUP,
+            variables={"assetKey": {"path": asset_key.path}},
+        )
+        return set(result.data["assetNodeOrError"]["pools"])
+
+    assert _graphql_pool(AssetKey(["concurrency_asset"])) == {"foo"}
+    assert _graphql_pool(AssetKey(["concurrency_graph_asset"])) == {"bar", "baz"}
+    assert _graphql_pool(AssetKey(["concurrency_multi_asset_1"])) == {"buzz"}

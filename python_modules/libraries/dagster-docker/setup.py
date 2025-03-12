@@ -1,11 +1,10 @@
 from pathlib import Path
-from typing import Dict
 
 from setuptools import find_packages, setup
 
 
 def get_version() -> str:
-    version: Dict[str, str] = {}
+    version: dict[str, str] = {}
     with open(Path(__file__).parent / "dagster_docker/version.py", encoding="utf8") as fp:
         exec(fp.read(), version)
 
@@ -39,5 +38,10 @@ setup(
         "docker",
         "docker-image-py",
     ],
+    extras_require={
+        "test": [
+            "flaky",
+        ],
+    },
     zip_safe=False,
 )

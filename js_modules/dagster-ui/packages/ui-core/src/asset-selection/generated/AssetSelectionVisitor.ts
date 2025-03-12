@@ -7,23 +7,30 @@ import {
   AndExpressionContext,
   AttributeExprContext,
   AttributeExpressionContext,
+  ChangedInBranchAttributeExprContext,
   CodeLocationAttributeExprContext,
+  ColumnAttributeExprContext,
+  ColumnTagAttributeExprContext,
+  DownTraversalContext,
   DownTraversalExpressionContext,
   ExprContext,
   FunctionCallExpressionContext,
   FunctionNameContext,
   GroupAttributeExprContext,
   KeyExprContext,
-  KeySubstringExprContext,
+  KeyValueContext,
   KindAttributeExprContext,
   NotExpressionContext,
   OrExpressionContext,
   OwnerAttributeExprContext,
   ParenthesizedExpressionContext,
   StartContext,
+  TableNameAttributeExprContext,
   TagAttributeExprContext,
-  TraversalContext,
+  TraversalAllowedExprContext,
+  TraversalAllowedExpressionContext,
   UpAndDownTraversalExpressionContext,
+  UpTraversalContext,
   UpTraversalExpressionContext,
   ValueContext,
 } from './AssetSelectionParser';
@@ -37,20 +44,12 @@ import {
  */
 export interface AssetSelectionVisitor<Result> extends ParseTreeVisitor<Result> {
   /**
-   * Visit a parse tree produced by the `AttributeExpression`
+   * Visit a parse tree produced by the `TraversalAllowedExpression`
    * labeled alternative in `AssetSelectionParser.expr`.
    * @param ctx the parse tree
    * @return the visitor result
    */
-  visitAttributeExpression?: (ctx: AttributeExpressionContext) => Result;
-
-  /**
-   * Visit a parse tree produced by the `UpTraversalExpression`
-   * labeled alternative in `AssetSelectionParser.expr`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitUpTraversalExpression?: (ctx: UpTraversalExpressionContext) => Result;
+  visitTraversalAllowedExpression?: (ctx: TraversalAllowedExpressionContext) => Result;
 
   /**
    * Visit a parse tree produced by the `UpAndDownTraversalExpression`
@@ -59,6 +58,14 @@ export interface AssetSelectionVisitor<Result> extends ParseTreeVisitor<Result> 
    * @return the visitor result
    */
   visitUpAndDownTraversalExpression?: (ctx: UpAndDownTraversalExpressionContext) => Result;
+
+  /**
+   * Visit a parse tree produced by the `UpTraversalExpression`
+   * labeled alternative in `AssetSelectionParser.expr`.
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  visitUpTraversalExpression?: (ctx: UpTraversalExpressionContext) => Result;
 
   /**
    * Visit a parse tree produced by the `DownTraversalExpression`
@@ -93,22 +100,6 @@ export interface AssetSelectionVisitor<Result> extends ParseTreeVisitor<Result> 
   visitOrExpression?: (ctx: OrExpressionContext) => Result;
 
   /**
-   * Visit a parse tree produced by the `FunctionCallExpression`
-   * labeled alternative in `AssetSelectionParser.expr`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitFunctionCallExpression?: (ctx: FunctionCallExpressionContext) => Result;
-
-  /**
-   * Visit a parse tree produced by the `ParenthesizedExpression`
-   * labeled alternative in `AssetSelectionParser.expr`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitParenthesizedExpression?: (ctx: ParenthesizedExpressionContext) => Result;
-
-  /**
    * Visit a parse tree produced by the `AllExpression`
    * labeled alternative in `AssetSelectionParser.expr`.
    * @param ctx the parse tree
@@ -123,14 +114,6 @@ export interface AssetSelectionVisitor<Result> extends ParseTreeVisitor<Result> 
    * @return the visitor result
    */
   visitKeyExpr?: (ctx: KeyExprContext) => Result;
-
-  /**
-   * Visit a parse tree produced by the `KeySubstringExpr`
-   * labeled alternative in `AssetSelectionParser.attributeExpr`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitKeySubstringExpr?: (ctx: KeySubstringExprContext) => Result;
 
   /**
    * Visit a parse tree produced by the `TagAttributeExpr`
@@ -165,12 +148,68 @@ export interface AssetSelectionVisitor<Result> extends ParseTreeVisitor<Result> 
   visitKindAttributeExpr?: (ctx: KindAttributeExprContext) => Result;
 
   /**
+   * Visit a parse tree produced by the `ColumnAttributeExpr`
+   * labeled alternative in `AssetSelectionParser.attributeExpr`.
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  visitColumnAttributeExpr?: (ctx: ColumnAttributeExprContext) => Result;
+
+  /**
+   * Visit a parse tree produced by the `TableNameAttributeExpr`
+   * labeled alternative in `AssetSelectionParser.attributeExpr`.
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  visitTableNameAttributeExpr?: (ctx: TableNameAttributeExprContext) => Result;
+
+  /**
+   * Visit a parse tree produced by the `ColumnTagAttributeExpr`
+   * labeled alternative in `AssetSelectionParser.attributeExpr`.
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  visitColumnTagAttributeExpr?: (ctx: ColumnTagAttributeExprContext) => Result;
+
+  /**
    * Visit a parse tree produced by the `CodeLocationAttributeExpr`
    * labeled alternative in `AssetSelectionParser.attributeExpr`.
    * @param ctx the parse tree
    * @return the visitor result
    */
   visitCodeLocationAttributeExpr?: (ctx: CodeLocationAttributeExprContext) => Result;
+
+  /**
+   * Visit a parse tree produced by the `ChangedInBranchAttributeExpr`
+   * labeled alternative in `AssetSelectionParser.attributeExpr`.
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  visitChangedInBranchAttributeExpr?: (ctx: ChangedInBranchAttributeExprContext) => Result;
+
+  /**
+   * Visit a parse tree produced by the `AttributeExpression`
+   * labeled alternative in `AssetSelectionParser.traversalAllowedExpr`.
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  visitAttributeExpression?: (ctx: AttributeExpressionContext) => Result;
+
+  /**
+   * Visit a parse tree produced by the `FunctionCallExpression`
+   * labeled alternative in `AssetSelectionParser.traversalAllowedExpr`.
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  visitFunctionCallExpression?: (ctx: FunctionCallExpressionContext) => Result;
+
+  /**
+   * Visit a parse tree produced by the `ParenthesizedExpression`
+   * labeled alternative in `AssetSelectionParser.traversalAllowedExpr`.
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  visitParenthesizedExpression?: (ctx: ParenthesizedExpressionContext) => Result;
 
   /**
    * Visit a parse tree produced by `AssetSelectionParser.start`.
@@ -187,11 +226,25 @@ export interface AssetSelectionVisitor<Result> extends ParseTreeVisitor<Result> 
   visitExpr?: (ctx: ExprContext) => Result;
 
   /**
-   * Visit a parse tree produced by `AssetSelectionParser.traversal`.
+   * Visit a parse tree produced by `AssetSelectionParser.traversalAllowedExpr`.
    * @param ctx the parse tree
    * @return the visitor result
    */
-  visitTraversal?: (ctx: TraversalContext) => Result;
+  visitTraversalAllowedExpr?: (ctx: TraversalAllowedExprContext) => Result;
+
+  /**
+   * Visit a parse tree produced by `AssetSelectionParser.upTraversal`.
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  visitUpTraversal?: (ctx: UpTraversalContext) => Result;
+
+  /**
+   * Visit a parse tree produced by `AssetSelectionParser.downTraversal`.
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  visitDownTraversal?: (ctx: DownTraversalContext) => Result;
 
   /**
    * Visit a parse tree produced by `AssetSelectionParser.functionName`.
@@ -213,4 +266,11 @@ export interface AssetSelectionVisitor<Result> extends ParseTreeVisitor<Result> 
    * @return the visitor result
    */
   visitValue?: (ctx: ValueContext) => Result;
+
+  /**
+   * Visit a parse tree produced by `AssetSelectionParser.keyValue`.
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  visitKeyValue?: (ctx: KeyValueContext) => Result;
 }

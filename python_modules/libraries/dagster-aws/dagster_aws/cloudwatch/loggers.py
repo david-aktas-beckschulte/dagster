@@ -10,6 +10,7 @@ from dagster import (
     _seven,
     logger,
 )
+from dagster._annotations import deprecated
 from dagster._core.utils import coerce_valid_log_level
 
 # The maximum batch size is 1,048,576 bytes, and this size is calculated as the sum of all event
@@ -29,6 +30,7 @@ def millisecond_timestamp(dt):
     return int(microsecond_timestamp / 1000)
 
 
+@deprecated(breaking_version="0.27", additional_warn_text="Use `PipesCloudWatchLogReader` instead.")
 class CloudwatchLogsHandler(logging.Handler):
     def __init__(
         self,
@@ -62,7 +64,7 @@ class CloudwatchLogsHandler(logging.Handler):
         self.check_log_group()
         self.check_log_stream()
 
-        super(CloudwatchLogsHandler, self).__init__()
+        super().__init__()
 
     def check_log_group(self):
         # Check that log group exists
@@ -200,6 +202,7 @@ class CloudwatchLogsHandler(logging.Handler):
     },
     description="The default colored console logger.",
 )
+@deprecated(breaking_version="0.27", additional_warn_text="Use `PipesCloudWatchLogReader` instead.")
 def cloudwatch_logger(init_context):
     """This logger provides support for sending Dagster logs to AWS CloudWatch.
 

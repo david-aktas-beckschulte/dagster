@@ -1,7 +1,8 @@
 import os
 import signal
-from subprocess import Popen
-from typing import Mapping, Optional, Sequence, Union
+from collections.abc import Mapping, Sequence
+from subprocess import PIPE, Popen
+from typing import Optional, Union
 
 from dagster_pipes import PipesExtras
 
@@ -40,6 +41,8 @@ class PipesSubprocessClient(PipesClient, TreatAsResourceParam):
             the subprocess. Defaults to :py:class:`PipesTempFileMessageReader`.
         forward_termination (bool): Whether to send a SIGINT signal to the subprocess
             if the orchestration process is interrupted or canceled. Defaults to True.
+        forward_stdio (bool): Whether to forward stdout and stderr from the subprocess to the
+            orchestration process. Defaults to True.
         termination_timeout_seconds (float): How long to wait after forwarding termination
             for the subprocess to exit. Defaults to 20.
     """
@@ -51,6 +54,7 @@ class PipesSubprocessClient(PipesClient, TreatAsResourceParam):
         context_injector: Optional[PipesContextInjector] = None,
         message_reader: Optional[PipesMessageReader] = None,
         forward_termination: bool = True,
+        forward_stdio: bool = True,
         termination_timeout_seconds: float = 20,
     ):
         self.env = check.opt_mapping_param(env, "env", key_type=str, value_type=str)
@@ -72,6 +76,7 @@ class PipesSubprocessClient(PipesClient, TreatAsResourceParam):
             or PipesTempFileMessageReader()
         )
         self.forward_termination = check.bool_param(forward_termination, "forward_termination")
+        self.forward_stdio = check.bool_param(forward_stdio, "forward_stdio")
         self.termination_timeout_seconds = check.numeric_param(
             termination_timeout_seconds, "termination_timeout_seconds"
         )
@@ -118,6 +123,8 @@ class PipesSubprocessClient(PipesClient, TreatAsResourceParam):
                     **(env or {}),
                     **pipes_session.get_bootstrap_env_vars(),
                 },
+                stdout=None if self.forward_stdio else PIPE,
+                stderr=None if self.forward_stdio else PIPE,
             )
             try:
                 process.wait()

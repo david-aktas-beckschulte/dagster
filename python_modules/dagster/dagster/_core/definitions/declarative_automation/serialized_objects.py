@@ -1,16 +1,11 @@
+from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import dataclass
-from typing import (
+from typing import (  # noqa: UP035
     TYPE_CHECKING,
     AbstractSet,
-    FrozenSet,
     Generic,
-    Iterator,
-    Mapping,
     NamedTuple,
     Optional,
-    Sequence,
-    Tuple,
-    Type,
     TypeVar,
     Union,
 )
@@ -83,7 +78,7 @@ class AssetSubsetWithMetadata(NamedTuple):
     metadata: MetadataMapping
 
     @property
-    def frozen_metadata(self) -> FrozenSet[Tuple[str, MetadataValue]]:
+    def frozen_metadata(self) -> frozenset[tuple[str, MetadataValue]]:
         return frozenset(self.metadata.items())
 
 
@@ -136,7 +131,7 @@ class AutomationConditionEvaluationWithRunIds(Generic[T_EntityKey]):
     """
 
     evaluation: AutomationConditionEvaluation[T_EntityKey]
-    run_ids: FrozenSet[str]
+    run_ids: frozenset[str]
 
     @property
     def key(self) -> T_EntityKey:
@@ -158,7 +153,7 @@ class AutomationConditionNodeCursor(Generic[T_EntityKey]):
     extra_state: Optional[StructuredCursor]
 
     def get_structured_cursor(
-        self, as_type: Type[T_StructuredCursor]
+        self, as_type: type[T_StructuredCursor]
     ) -> Optional[T_StructuredCursor]:
         """Returns the extra_state value if it is of the expected type. Otherwise, returns None."""
         if isinstance(self.extra_state, as_type):
@@ -172,7 +167,7 @@ class AutomationConditionCursor(Generic[T_EntityKey]):
     """Incremental state calculated during the evaluation of a AutomationCondition. This may be used
     on the subsequent evaluation to make the computation more efficient.
 
-    Attributes:
+    Args:
         previous_requested_subset: The subset that was requested for this asset on the previous tick.
         effective_timestamp: The timestamp at which the evaluation was performed.
         last_event_id: The maximum storage ID over all events used in this evaluation.

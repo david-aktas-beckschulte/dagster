@@ -6,6 +6,7 @@ import responses
 from dagster import materialize
 from dagster._config.field_utils import EnvVar
 from dagster._core.code_pointer import CodePointer
+from dagster._core.definitions.asset_spec import AssetSpec
 from dagster._core.definitions.assets import AssetsDefinition
 from dagster._core.definitions.decorators.asset_decorator import asset
 from dagster._core.definitions.definitions_class import Definitions
@@ -24,6 +25,7 @@ from dagster._utils.test.definitions import lazy_definitions
 from dagster_powerbi import PowerBIWorkspace
 from dagster_powerbi.assets import build_semantic_model_refresh_asset_definition
 from dagster_powerbi.resource import BASE_API_URL, PowerBIToken, load_powerbi_asset_specs
+from dagster_powerbi.translator import DagsterPowerBITranslator, PowerBITranslatorData
 
 from dagster_powerbi_tests.conftest import SAMPLE_SEMANTIC_MODEL
 
@@ -64,7 +66,7 @@ def test_translator_dashboard_spec(workspace_data_api_mocks: None, workspace_id:
         credentials=PowerBIToken(api_token=fake_token),
         workspace_id=workspace_id,
     )
-    all_assets = load_powerbi_asset_specs(resource)
+    all_assets = load_powerbi_asset_specs(resource, use_workspace_scan=False)
 
     # 1 dashboard, 1 report, 1 semantic model
     assert len(all_assets) == 3
@@ -82,6 +84,59 @@ def test_translator_dashboard_spec(workspace_data_api_mocks: None, workspace_id:
     assert semantic_model_asset.key.path == ["semantic_model", "Sales_Returns_Sample_v201912"]
 
 
+class MyCustomTranslator(DagsterPowerBITranslator):
+    def get_asset_spec(self, data: PowerBITranslatorData) -> AssetSpec:
+        default_spec = super().get_asset_spec(data)
+        return default_spec.replace_attributes(
+            key=default_spec.key.with_prefix("prefix"),
+        ).merge_attributes(metadata={"custom": "metadata"})
+
+
+def test_translator_custom_metadata(workspace_data_api_mocks: None, workspace_id: str) -> None:
+    fake_token = uuid.uuid4().hex
+    resource = PowerBIWorkspace(
+        credentials=PowerBIToken(api_token=fake_token),
+        workspace_id=workspace_id,
+    )
+    all_asset_specs = load_powerbi_asset_specs(
+        workspace=resource,
+        dagster_powerbi_translator=MyCustomTranslator(),
+        use_workspace_scan=False,
+    )
+    asset_spec = next(spec for spec in all_asset_specs)
+
+    assert "custom" in asset_spec.metadata
+    assert asset_spec.metadata["custom"] == "metadata"
+    assert asset_spec.key.path == ["prefix", "dashboard", "Sales_Returns_Sample_v201912"]
+    assert "dagster/kind/powerbi" in asset_spec.tags
+
+
+def test_translator_custom_metadata_legacy(
+    workspace_data_api_mocks: None, workspace_id: str
+) -> None:
+    fake_token = uuid.uuid4().hex
+    resource = PowerBIWorkspace(
+        credentials=PowerBIToken(api_token=fake_token),
+        workspace_id=workspace_id,
+    )
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Support of `dagster_powerbi_translator` as a Type\[DagsterPowerBITranslator\]",
+    ):
+        # Pass the translator type
+        all_asset_specs = load_powerbi_asset_specs(
+            workspace=resource,
+            dagster_powerbi_translator=MyCustomTranslator,
+            use_workspace_scan=False,
+        )
+    asset_spec = next(spec for spec in all_asset_specs)
+
+    assert "custom" in asset_spec.metadata
+    assert asset_spec.metadata["custom"] == "metadata"
+    assert asset_spec.key.path == ["prefix", "dashboard", "Sales_Returns_Sample_v201912"]
+    assert "dagster/kind/powerbi" in asset_spec.tags
+
+
 @lazy_definitions
 def state_derived_defs_two_workspaces() -> Definitions:
     resource = PowerBIWorkspace(
@@ -94,8 +149,8 @@ def state_derived_defs_two_workspaces() -> Definitions:
     )
     return Definitions(
         assets=[
-            *load_powerbi_asset_specs(resource),
-            *load_powerbi_asset_specs(resource_second_workspace),
+            *load_powerbi_asset_specs(resource, use_workspace_scan=False),
+            *load_powerbi_asset_specs(resource_second_workspace, use_workspace_scan=False),
         ]
     )
 
@@ -125,7 +180,7 @@ def test_refreshable_semantic_model(
         workspace_id=workspace_id,
         refresh_poll_interval=0,
     )
-    all_specs = load_powerbi_asset_specs(resource)
+    all_specs = load_powerbi_asset_specs(resource, use_workspace_scan=False)
 
     assets_with_semantic_models = [
         build_semantic_model_refresh_asset_definition(resource_key="powerbi", spec=spec)
@@ -235,7 +290,7 @@ def state_derived_defs() -> Definitions:
         credentials=PowerBIToken(api_token=fake_token),
         workspace_id="a2122b8f-d7e1-42e8-be2b-a5e636ca3221",
     )
-    powerbi_specs = load_powerbi_asset_specs(resource)
+    powerbi_specs = load_powerbi_asset_specs(resource, use_workspace_scan=False)
 
     @asset
     def my_materializable_asset(): ...

@@ -1,21 +1,11 @@
-import os
+import sys
+from collections.abc import Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime
 from functools import cached_property
 from queue import Queue
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Iterator,
-    Mapping,
-    Optional,
-    Sequence,
-    TypedDict,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Literal, Optional, TypedDict, Union, cast
 
 from dagster_pipes import (
     DAGSTER_PIPES_CONTEXT_ENV_VAR,
@@ -45,13 +35,21 @@ from dagster._core.definitions.asset_check_spec import AssetCheckSeverity
 from dagster._core.definitions.data_version import DataProvenance, DataVersion
 from dagster._core.definitions.events import AssetKey
 from dagster._core.definitions.metadata import MetadataValue, normalize_metadata_value
+from dagster._core.definitions.metadata.table import (
+    TableColumn,
+    TableColumnConstraints,
+    TableColumnDep,
+    TableColumnLineage,
+    TableRecord,
+    TableSchema,
+)
 from dagster._core.definitions.partition_key_range import PartitionKeyRange
 from dagster._core.definitions.result import MaterializeResult
 from dagster._core.definitions.time_window_partitions import (
     TimeWindow,
     has_one_dimension_time_window_partitioning,
 )
-from dagster._core.errors import DagsterPipesExecutionError
+from dagster._core.errors import DagsterInvariantViolationError, DagsterPipesExecutionError
 from dagster._core.events import EngineEventData
 from dagster._core.execution.context.asset_execution_context import AssetExecutionContext
 from dagster._core.execution.context.invocation import BaseDirectExecutionContext
@@ -101,6 +99,7 @@ class PipesMessageHandler:
         self._extra_msg_queue: Queue[Any] = Queue()
         # Only read by the main thread after all messages are handled, so no need for a lock
         self._received_opened_msg = False
+        self._messages_include_stdio_logs = False
         self._received_closed_msg = False
         self._opened_payload: Optional[PipesOpenedData] = None
 
@@ -130,9 +129,8 @@ class PipesMessageHandler:
             k: self._resolve_metadata_value(v["raw_value"], v["type"]) for k, v in metadata.items()
         }
 
-    def _resolve_metadata_value(
-        self, value: Any, metadata_type: PipesMetadataType
-    ) -> MetadataValue:
+    @staticmethod
+    def _resolve_metadata_value(value: Any, metadata_type: PipesMetadataType) -> MetadataValue:
         if metadata_type == PIPES_METADATA_TYPE_INFER:
             return normalize_metadata_value(value)
         elif metadata_type == "text":
@@ -158,7 +156,54 @@ class PipesMessageHandler:
         elif metadata_type == "asset":
             return MetadataValue.asset(AssetKey.from_user_string(value))
         elif metadata_type == "table":
-            return MetadataValue.table(value)
+            value = check.mapping_param(value, "table_value", key_type=str)
+            return MetadataValue.table(
+                records=[TableRecord(record) for record in value["records"]],
+                schema=TableSchema(
+                    columns=[
+                        TableColumn(
+                            name=column["name"],
+                            type=column["type"],
+                            description=column.get("description"),
+                            tags=column.get("tags"),
+                            constraints=TableColumnConstraints(**column["constraints"])
+                            if column.get("constraints")
+                            else None,
+                        )
+                        for column in value["schema"]
+                    ]
+                ),
+            )
+        elif metadata_type == "table_schema":
+            value = check.mapping_param(value, "table_schema_value", key_type=str)
+            return MetadataValue.table_schema(
+                schema=TableSchema(
+                    columns=[
+                        TableColumn(
+                            name=column["name"],
+                            type=column["type"],
+                            description=column.get("description"),
+                            tags=column.get("tags"),
+                            constraints=TableColumnConstraints(**column["constraints"])
+                            if column.get("constraints")
+                            else None,
+                        )
+                        for column in value["columns"]
+                    ]
+                )
+            )
+        elif metadata_type == "table_column_lineage":
+            value = check.mapping_param(value, "table_column_value", key_type=str)
+            return MetadataValue.column_lineage(
+                lineage=TableColumnLineage(
+                    deps_by_column={
+                        column: [TableColumnDep(**dep) for dep in deps]
+                        for column, deps in value["deps_by_column"].items()
+                    }
+                )
+            )
+        elif metadata_type == "timestamp":
+            return MetadataValue.timestamp(float(check.numeric_param(value, "timestamp")))
         elif metadata_type == "null":
             return MetadataValue.null()
         else:
@@ -182,6 +227,8 @@ class PipesMessageHandler:
             self._handle_report_asset_check(**message["params"])  # type: ignore
         elif method == "log":
             self._handle_log(**message["params"])  # type: ignore
+        elif method == "log_external_stream":
+            self._handle_log_external_stream(**message["params"])  # type: ignore
         elif method == "report_custom_message":
             self._handle_extra_message(**message["params"])  # type: ignore
         else:
@@ -251,6 +298,16 @@ class PipesMessageHandler:
         check.str_param(message, "message")
         self._context.log.log(level, message)
 
+    def _handle_log_external_stream(
+        self, stream: Literal["stdout", "stderr"], text: str, extras: Optional[PipesExtras] = None
+    ):
+        if stream == "stdout":
+            sys.stdout.write(text)
+        elif stream == "stderr":
+            sys.stderr.write(text)
+        else:
+            raise DagsterInvariantViolationError(f"Unexpected stream: {stream}")
+
     def _handle_extra_message(self, payload: Any):
         self._extra_msg_queue.put(payload)
 
@@ -313,57 +370,8 @@ class PipesSession:
     created_at: datetime = field(default_factory=datetime.now)
 
     @cached_property
-    def default_remote_invocation_info(self) -> Dict[str, str]:
-        """Key-value pairs encoding metadata about the launching Dagster process, typically attached to the remote
-        environment.
-
-        Remote execution environments commonly have their own concepts of tags or labels. It's useful to include
-        Dagster-specific metadata in these environments to help with debugging, monitoring, and linking remote
-        resources back to Dagster. For example, the Kubernetes Pipes client is using these tags as Kubernetes labels.
-
-        By default the tags include:
-        * dagster/run-id
-        * dagster/job
-
-        And, if available:
-        * dagster/code-location
-        * dagster/user
-        * dagster/partition-key
-
-        And, for Dagster+ deployments:
-        * dagster/deployment-name
-        * dagster/git-repo
-        * dagster/git-branch
-        * dagster/git-sha
-        """
-        tags = {
-            "dagster/run-id": self.context.run_id,
-            "dagster/job": self.context.job_name,
-        }
-
-        if self.context.dagster_run.remote_job_origin:
-            tags["dagster/code-location"] = (
-                self.context.dagster_run.remote_job_origin.repository_origin.code_location_origin.location_name
-            )
-
-        if user := self.context.get_tag("dagster/user"):
-            tags["dagster/user"] = user
-
-        if self.context.has_partition_key:
-            tags["dagster/partition-key"] = self.context.partition_key
-
-        # now using the walrus operator for os.getenv("DAGSTER_CLOUD_DEPLOYMENT_NAME")
-
-        for env_var, tag in {
-            "DAGSTER_CLOUD_DEPLOYMENT_NAME": "deployment-name",
-            "DAGSTER_CLOUD_GIT_REPO": "git-repo",
-            "DAGSTER_CLOUD_GIT_BRANCH": "git-branch",
-            "DAGSTER_CLOUD_GIT_SHA": "git-sha",
-        }.items():
-            if value := os.getenv(env_var):
-                tags[f"dagster/{tag}"] = value
-
-        return tags
+    def default_remote_invocation_info(self) -> dict[str, str]:
+        return {**self.context.dagster_run.dagster_execution_info}
 
     @public
     def get_bootstrap_env_vars(self) -> Mapping[str, str]:

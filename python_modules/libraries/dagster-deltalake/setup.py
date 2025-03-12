@@ -1,11 +1,10 @@
 from pathlib import Path
-from typing import Dict
 
 from setuptools import find_packages, setup
 
 
 def get_version() -> str:
-    version: Dict[str, str] = {}
+    version: dict[str, str] = {}
     with open(Path(__file__).parent / "dagster_deltalake/version.py", encoding="utf8") as fp:
         exec(fp.read(), version)
 
@@ -24,7 +23,6 @@ setup(
     description="Package for Deltalake-specific Dagster framework op and resource components.",
     url="https://github.com/dagster-io/dagster/tree/master/python_modules/libraries/dagster-deltalake",
     classifiers=[
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "License :: OSI Approved :: Apache Software License",
@@ -34,7 +32,7 @@ setup(
     include_package_data=True,
     python_requires=">=3.9,<3.13",
     install_requires=[
-        "deltalake>=0.15,<0.18",
+        "deltalake>=0.25.0",
         f"dagster{pin}",
     ],
     extras_require={

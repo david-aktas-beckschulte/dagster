@@ -13,6 +13,7 @@ from dagster import (
     _check as check,
     resource,
 )
+from dagster._annotations import beta
 from dagster._config.pythonic_config import ConfigurableResource
 from dagster._core.definitions.resource_definition import dagster_maintained_resource
 from dagster._core.execution.context.init import InitResourceContext
@@ -34,6 +35,7 @@ def key_from_str(key_str):
     return result
 
 
+@beta
 class SSHResource(ConfigurableResource):
     """Resource for ssh remote execution using Paramiko.
 
@@ -89,8 +91,8 @@ class SSHResource(ConfigurableResource):
         if not self.username:
             if self._logger:
                 self._logger.debug(
-                    "username to ssh to host: %s is not specified. Using system's default provided"
-                    " by getpass.getuser()" % self.remote_host
+                    f"username to ssh to host: {self.remote_host} is not specified. Using system's default provided"
+                    " by getpass.getuser()"
                 )
             self.username = getpass.getuser()
 
@@ -240,6 +242,7 @@ class SSHResource(ConfigurableResource):
         return local_filepath
 
 
+@beta
 @dagster_maintained_resource
 @resource(
     config_schema={
